@@ -467,45 +467,51 @@ label {
 
 /* End Statistics Section */
 
-/* Testimonials Section */
-.contact {
-    background-color: var(--light-background-color);
+/* Footer Section */
+.site-footer {
+    background-color: var(--dark-background-color);
+    color: var(--light-text-color);
+    text-align: center;
+    padding: 50px 0;
 }
 
-.contact-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: start;
+.site-footer h2 {
+    color: white;
+    margin-bottom: 15px;
 }
 
-.contact-title {
-    text-align: left;
+.footer-text {
+    margin-bottom: 25px;
+    color: rgba(255, 255, 255, .8);
 }
 
-.contact-description {
-    margin: 20px 0;
-}
-
-.contact-info p {
-    margin-bottom: 12px;
-}
-
-.contact-form {
+.footer-nav {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 25px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
+.footer-nav a {
+    color: white;
+    transition: color .3s;
 }
 
-.form-group label {
+.footer-nav a:hover {
+    color: var(--secondary-color);
+}
+
+.footer-contact {
+    margin-bottom: 20px;
+    font-style: normal;
+}
+
+.footer-contact p {
     margin-bottom: 8px;
 }
 
-.contact-form button {
-    width: fit-content;
+.copyright {
+    border-top: 1px solid rgba(255, 255, 255, .2);
+    padding-top: 20px;
+    color: rgba(255, 255, 255, .7);
 }
