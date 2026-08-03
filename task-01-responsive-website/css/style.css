@@ -11,7 +11,7 @@
     --light-background-color: #f8fafc;
     --dark-background-color: #0f172a;
 
-    --border-color: #dbe3ec;
+    --border-color: #1b2e44;
 
     --section-spacing: 80px;
     --container-padding: 24px;
@@ -79,7 +79,8 @@ h3 {
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: 1.25rem;
+    color: var(--primary-color);
 }
 
 h2 {
@@ -166,3 +167,132 @@ label {
     outline: none;
     box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
 }
+
+/* Header and Navigation section*/
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-small);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    gap: 32px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.brand-logo {
+    width: 50px;
+    height: auto;
+}
+
+.nav-list {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-link {
+    position: relative;
+    padding-block: 8px;
+    color: var(--text-color);
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+/* End Header and Navigation section*/
+
+/* Hero Section */
+.hero {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top right,
+            rgba(14, 165, 233, 0.18),
+            transparent 35%),
+        linear-gradient(135deg,
+            #f8fafc 0%,
+            #eef8ff 100%);
+}
+
+.hero-container {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 72px;
+}
+
+.hero-content {
+    max-width: 650px;
+}
+
+.hero-eyebrow {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--primary-dark);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    margin-bottom: 24px;
+    font-size:30px;
+    color: var(--text-color);
+}
+
+.hero-description {
+    max-width: 600px;
+    margin-bottom: 32px;
+    font-size: 1.1rem;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.button-secondary {
+    border: 1px solid var(--primary-color);
+    background-color: transparent;
+    color: var(--primary-dark);
+}
+
+.button-secondary:hover {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+}
+/* End Hero Section */
