@@ -515,3 +515,47 @@ label {
     padding-top: 20px;
     color: rgba(255, 255, 255, .7);
 }
+
+/* Responsive Design */
+
+/* Tablet */
+@media (max-width: 1024px) {
+
+    :root {
+        --section-spacing: 64px;
+    }
+
+    .container {
+        width: min(100% - 40px, var(--container-width));
+    }
+
+    .header-container {
+        gap: 20px;
+    }
+
+    .nav-list {
+        gap: 15px;
+    }
+
+    .hero-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .hero-content {
+        max-width: 750px;
+    }
+
+    .about-container,
+    .contact-container {
+        gap: 40px;
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+    }
+}
