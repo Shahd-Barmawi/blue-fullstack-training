@@ -410,3 +410,39 @@ if (backToTopButton) {
     });
 
 }
+
+// ============================================
+// Active Navigation State
+// ============================================
+
+const pageSections = document.querySelectorAll("main section[id]");
+
+const updateActiveNavigation = (sectionId) => {
+    navLinks.forEach((link) => {
+        const linkTarget = link.getAttribute("href");
+
+        link.classList.toggle(
+            "active",
+            linkTarget === `#${sectionId}`
+        );
+    });
+};
+
+const sectionObserver = new IntersectionObserver(
+    (entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                updateActiveNavigation(entry.target.id);
+            }
+        });
+    },
+    {
+        root: null,
+        threshold: 0.4,
+        rootMargin: "-80px 0px -40% 0px"
+    }
+);
+
+pageSections.forEach((section) => {
+    sectionObserver.observe(section);
+});
