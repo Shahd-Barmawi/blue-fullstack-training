@@ -541,6 +541,62 @@ label {
     color: rgba(255, 255, 255, .7);
 }
 
+/* Back to Top Button */
+
+.back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 900;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+
+    box-shadow: var(--shadow-medium);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    pointer-events: none;
+
+    transition:
+        opacity var(--transition),
+        visibility var(--transition),
+        transform var(--transition),
+        background-color var(--transition);
+}
+
+.back-to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.back-to-top:hover {
+    background-color: var(--primary-dark);
+}
+
+.back-to-top:focus-visible {
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 4px;
+}
+
+.back-to-top-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+
 /* Responsive Design */
 
 /* Tablet */

@@ -104,6 +104,16 @@ const showFormSuccess = () => {
     formStatus.classList.add("success");
 };
 
+const toggleBackToTopButton = () => {
+
+    if (window.scrollY > 400) {
+        backToTopButton.classList.add("is-visible");
+    } else {
+        backToTopButton.classList.remove("is-visible");
+    }
+
+};
+
 const validateFullName = () => {
     const value = fullNameInput.value.trim();
     fullNameInput.value = value;
@@ -279,6 +289,9 @@ const validateMessage = () => {
     return true;
 };
 
+// Back To Top Button
+const backToTopButton = document.querySelector("#back-to-top");
+
 if (fullNameInput) {
     fullNameInput.addEventListener("blur", validateFullName);
 
@@ -381,4 +394,19 @@ if (contactForm) {
 
         showFormSuccess();
     });
+}
+
+window.addEventListener("scroll", toggleBackToTopButton);
+
+if (backToTopButton) {
+
+    backToTopButton.addEventListener("click", () => {
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+
 }
