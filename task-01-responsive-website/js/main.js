@@ -411,9 +411,7 @@ if (backToTopButton) {
 
 }
 
-// ============================================
 // Active Navigation State
-// ============================================
 
 const pageSections = document.querySelectorAll("main section[id]");
 
@@ -446,3 +444,95 @@ const sectionObserver = new IntersectionObserver(
 pageSections.forEach((section) => {
     sectionObserver.observe(section);
 });
+
+// Statistics Counters
+
+const statisticsSection = document.querySelector("#statistics");
+const statisticNumbers =
+    document.querySelectorAll(".statistic-number");
+
+let countersStarted = false;
+
+const reduceMotionQuery = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+);
+
+const animateCounter = (counter) => {
+    const target = Number(counter.dataset.target);
+    const suffix = counter.dataset.suffix || "";
+
+    const duration = 1200;
+    const startTime = performance.now();
+
+    const updateCounter = (currentTime) => {
+        const elapsedTime = currentTime - startTime;
+
+        const progress = Math.min(
+            elapsedTime / duration,
+            1
+        );
+
+        const currentValue = Math.floor(
+            progress * target
+        );
+
+        counter.textContent =
+            `${currentValue}${suffix}`;
+
+        if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+        } else {
+            counter.textContent =
+                `${target}${suffix}`;
+        }
+    };
+
+    requestAnimationFrame(updateCounter);
+};
+
+const startStatisticsCounters = () => {
+    if (countersStarted) {
+        return;
+    }
+
+    countersStarted = true;
+
+    statisticNumbers.forEach((counter) => {
+        const target = counter.dataset.target;
+        const suffix = counter.dataset.suffix || "";
+
+        if (reduceMotionQuery.matches) {
+            counter.textContent =
+                `${target}${suffix}`;
+        } else {
+            animateCounter(counter);
+        }
+    });
+};
+
+if (
+    statisticsSection &&
+    statisticNumbers.length > 0
+) {
+    const statisticsObserver =
+        new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        startStatisticsCounters();
+
+                        observer.unobserve(
+                            entry.target
+                        );
+                    }
+                });
+            },
+            {
+                threshold: 0.25
+            }
+        );
+
+    statisticsObserver.observe(
+        statisticsSection
+    );
+}
