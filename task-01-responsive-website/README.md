@@ -380,3 +380,149 @@ This task helped me understand responsive web development in much greater depth.
 Instead of only following instructions, I spent extra time reviewing concepts, experimenting with different responsive solutions, and refining the design until it behaved correctly across all required screen sizes.
 
 The experience significantly improved both my CSS and JavaScript skills, especially in responsive layouts and interactive navigation.
+
+# Task 04 – JavaScript Interactivity & Form Validation
+
+## Overview
+
+In Task 04, I enhanced the website by adding interactive JavaScript features and improving the user experience. The work focused on client-side form validation, accessibility, navigation interactions, animated statistics counters, and responsive behaviors.
+
+---
+
+## Features Completed
+
+### Mobile Navigation
+
+- Implemented a responsive hamburger menu for mobile devices.
+- Added open and close functionality using JavaScript.
+- Closed the navigation automatically when selecting a menu item.
+- Added keyboard support using the Escape key.
+- Updated ARIA attributes for better accessibility.
+
+---
+
+### Contact Form Validation
+
+Implemented complete client-side validation for:
+
+- Full Name
+- Email Address
+- Phone Number (Optional)
+- Subject
+- Message
+
+Validation includes:
+
+- Required field validation.
+- Minimum and maximum character limits.
+- Email format validation using Regular Expressions.
+- Optional phone number validation.
+- Automatic trimming of unnecessary spaces.
+- Real-time validation while correcting invalid inputs.
+- Field validation on blur.
+- Focus moves to the first invalid field after submission.
+
+---
+
+### User Feedback
+
+Added clear visual feedback by:
+
+- Highlighting invalid fields.
+- Highlighting valid fields.
+- Displaying field-specific error messages.
+- Showing a success message after successful validation.
+- Resetting the form after successful submission.
+
+---
+
+### Message Character Counter
+
+Implemented a live character counter for the Message field.
+
+- Updates while typing.
+- Displays the current number of characters.
+- Maximum length of 500 characters.
+
+---
+
+### Back To Top Button
+
+Implemented a floating Back to Top button.
+
+Features:
+
+- Appears only after scrolling down the page.
+- Smoothly scrolls back to the top.
+- Includes hover and focus effects.
+- Uses a custom arrow icon.
+- Accessible using keyboard navigation.
+
+---
+
+### Active Navigation
+
+Implemented dynamic navigation highlighting.
+
+- Detects the currently visible section.
+- Automatically updates the active navigation link.
+- Uses the Intersection Observer API.
+
+---
+
+### Statistics Counter Animation
+
+Implemented animated statistics counters.
+
+Features:
+
+- Numbers animate from 0 to their target values.
+- Animation starts only when the Statistics section enters the viewport.
+- Runs only once.
+- Respects reduced motion user preferences.
+
+---
+
+## Accessibility Improvements
+
+Implemented several accessibility enhancements including:
+
+- Proper ARIA attributes.
+- Keyboard navigation support.
+- Focus management.
+- Accessible validation feedback.
+- Semantic interactive controls.
+
+---
+
+## JavaScript Concepts Practiced
+
+During this task I practiced:
+
+- DOM Selection
+- Event Listeners
+- Functions
+- Arrow Functions
+- Conditional Statements
+- Loops
+- Regular Expressions
+- Dataset Attributes
+- Class Manipulation
+- Form Validation
+- Intersection Observer 
+- requestAnimationFrame()
+- Window Scrolling 
+
+---
+
+## Challenges
+
+During this task I spent additional time reviewing responsive web design concepts to better understand how different layouts behave across screen sizes.
+
+I also learned how to build a responsive hamburger navigation menu, manage JavaScript events more effectively, and improve accessibility when working with interactive components.
+
+Another challenge was organizing the validation logic without repeating code. Creating reusable helper functions made the implementation cleaner and easier to maintain.
+
+Finally, I became much more comfortable working with DOM manipulation, event handling, and client-side form validation.
+
+---
