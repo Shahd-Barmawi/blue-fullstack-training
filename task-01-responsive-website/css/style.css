@@ -56,6 +56,24 @@ a {
     text-decoration: none;
 }
 
+.skip-link {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 2000;
+    padding: 12px 18px;
+    border-radius: var(--border-radius-small);
+    background-color: var(--dark-background-color);
+    color: var(--light-text-color);
+    font-weight: 700;
+    transform: translateY(-150%);
+    transition: transform var(--transition);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
 ul {
     list-style: none;
 }
