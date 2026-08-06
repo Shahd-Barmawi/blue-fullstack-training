@@ -79,7 +79,7 @@
 - [x] The page remains usable at 200% zoom.
 - [x] No horizontal scrolling occurs at 200% zoom.
 - [Not Applicable] Reduced-motion preferences are respected.
-- [ ] Lighthouse accessibility score is 90 or higher.
+- [x] Lighthouse accessibility score is 90 or higher.
 
 ---
 
@@ -91,7 +91,7 @@
 - [x] Immediately visible images are not lazy-loaded unnecessarily.
 - [x] The JavaScript file loads using defer.
 - [x] No unnecessary external libraries are loaded.
-- [ ] Lighthouse performance results were reviewed.
+- [x] Lighthouse performance results were reviewed.
 - [x] Performance improvements do not break layout or functionality.
 
 ---
@@ -112,9 +112,8 @@
 - [x] No overlapping elements exist.
 - [x] Text remains readable at all required widths.
 - [x] Forms remain usable on desktop and mobile.
-- [ ] The deployed GitHub Pages version loads correctly.
-- [ ] The deployed browser Console is clean.
-
+- [x] The deployed GitHub Pages version loads correctly.
+- [x] The deployed browser Console is clean.
 ---
 
 ## Known Limitations
