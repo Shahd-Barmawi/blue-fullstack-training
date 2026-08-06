@@ -526,3 +526,151 @@ Another challenge was organizing the validation logic without repeating code. Cr
 Finally, I became much more comfortable working with DOM manipulation, event handling, and client-side form validation.
 
 ---
+# Task 05 – Frontend QA, Accessibility, Performance & Deployment
+
+## Overview
+
+This task focused on testing, improving, and validating the website before deployment. Functional testing, accessibility improvements, responsive verification, performance auditing, and GitHub Pages deployment were completed.
+
+---
+
+## Completed Tasks
+
+- Performed functional regression testing.
+- Fixed identified frontend issues.
+- Improved keyboard accessibility.
+- Added a skip link for keyboard users.
+- Verified responsive behavior across multiple screen sizes.
+- Tested the website on Google Chrome and Microsoft Edge.
+- Verified GitHub Pages deployment.
+- Performed a Lighthouse audit.
+- Documented QA findings and evidence.
+
+---
+
+## Technologies & Tools
+
+- HTML5
+- CSS3
+- JavaScript 
+- Git
+- GitHub
+- GitHub Pages
+- Chrome DevTools
+- Lighthouse
+
+---
+
+## Lighthouse Results
+
+| Category | Score |
+|----------|------:|
+| Performance | **100** |
+| Accessibility | **96** |
+| Best Practices | **100** |
+| SEO | **91** |
+
+---
+
+## QA Testing
+
+The following areas were tested successfully:
+
+- Desktop navigation
+- Mobile navigation
+- Active navigation highlighting
+- Contact form validation
+- Character counter
+- Statistics animation
+- Back-to-top button
+- Keyboard navigation
+- Responsive layouts
+- Cross-browser compatibility
+- GitHub Pages deployment
+- Browser console
+- Lighthouse audit
+
+---
+
+## Screenshots
+### Final Desktop View
+
+The final responsive desktop layout after completing all project tasks.
+
+![Final Desktop](images/QATestingImages/task-05-final-desktop.png)
+
+---
+
+### Final Mobile View
+
+Responsive mobile layout with the mobile navigation menu and optimized content.
+
+![Final Mobile](images/QATestingImages/task-05-final-mobile.png)
+
+---
+
+### Keyboard Focus
+
+Keyboard focus indicator while navigating the website using the Tab key.
+
+![Keyboard Focus](images/QATestingImages/task-05-keyboard-focus-tap.png)
+
+---
+
+### Contact Form Validation
+
+Validation messages displayed when submitting invalid form data.
+
+![Form Validation](images/QATestingImages/task-05-form-validation-errors.PNG)
+
+---
+
+### Successful Form Submission
+
+The contact form after successful validation.
+
+![Form Success](images/QATestingImages/task-05-form-success.PNG)
+
+---
+
+### QA Issue – Active Navigation
+
+During testing, the Contact section was visible while the Statistics navigation item remained active. This issue was fixed by updating the active navigation logic.
+
+![QA Issue](images/QATestingImages/task-05-qa-01-active-navigation-error.png)
+
+---
+
+### Lighthouse Report
+
+Final Lighthouse audit after deployment.
+
+- Performance: **100**
+- Accessibility: **96**
+- Best Practices: **100**
+- SEO: **91**
+
+![Lighthouse](images/QATestingImages/task-05-lighthouse-results.png)
+
+---
+
+### Browser Console
+
+The deployed website was tested to ensure there were no JavaScript errors.
+
+![Console](images/QATestingImages/task-05-console-clean.png)
+
+---
+
+## Challenges & Lessons Learned
+
+During this task, I improved my understanding of frontend quality assurance by identifying and fixing issues before deployment. I also learned how to:
+
+- Perform functional and accessibility testing.
+- Test responsive layouts on different screen sizes.
+- Verify browser compatibility.
+- Deploy a website using GitHub Pages.
+- Analyze website quality using Lighthouse.
+- Document QA findings and testing evidence.
+
+---
