@@ -364,6 +364,46 @@
             </div>
         </section>
 
+        <section class="posts section" id="posts">
+
+            <div class="container">
+
+                <p class="section-label">
+                    Latest Posts
+                </p>
+
+                <h2 class="section-title">
+                    Latest Resources
+                </h2>
+
+                <p class="section-description">
+                    Browse the latest articles loaded dynamically from a REST API.
+                </p>
+
+                <div class="posts-search">
+
+                    <input type="search" id="posts-search" placeholder="Search posts..." aria-label="Search posts">
+
+                    <button id="posts-reset" type="button">
+                        Reset
+                    </button>
+
+                </div>
+
+                <p id="posts-result-count" class="posts-result-count">
+                    Loading...
+                </p>
+
+                <div id="posts-state" class="posts-state" role="status" aria-live="polite">
+                    Loading posts...
+                </div>
+
+                <div id="posts-container" class="posts-grid"></div>
+
+            </div>
+
+        </section>
+
         <section id="contact" class="contact section">
 
             <div class="container contact-container">

@@ -679,3 +679,243 @@ const savedProjectFilter = getSavedProjectFilter();
 
 setupProjectFilters();
 filterProjects(savedProjectFilter);
+
+// Latest Posts - REST API Integration
+
+const POSTS_API_URL =
+    "https://jsonplaceholder.typicode.com/posts";
+    
+const postsContainer =
+    document.querySelector("#posts-container");
+
+const postsState =
+    document.querySelector("#posts-state");
+
+const postsResultCount =
+    document.querySelector("#posts-result-count");
+
+const postsSearchInput =
+    document.querySelector("#posts-search");
+
+const postsResetButton =
+    document.querySelector("#posts-reset");
+
+let loadedPosts = [];
+
+// Posts UI States
+
+const showPostsLoading = () => {
+    postsState.textContent = "Loading posts...";
+
+    postsContainer.innerHTML = "";
+    postsResultCount.textContent = "";
+};
+
+const showPostsError = () => {
+    postsContainer.innerHTML = "";
+    postsResultCount.textContent = "";
+    postsState.innerHTML = "";
+
+    const errorMessage =
+        document.createElement("p");
+
+    errorMessage.textContent =
+        "Unable to load posts. Please try again.";
+
+    const retryButton =
+        document.createElement("button");
+
+    retryButton.type = "button";
+    retryButton.classList.add("button");
+    retryButton.textContent = "Retry";
+
+    retryButton.addEventListener(
+        "click",
+        fetchPosts
+    );
+
+    postsState.append(
+        errorMessage,
+        retryButton
+    );
+};
+
+const showPostsEmpty = () => {
+    postsContainer.innerHTML = "";
+
+    postsResultCount.textContent =
+        "0 posts";
+
+    postsState.textContent =
+        "No posts are available.";
+};
+
+const showNoMatchingPosts = () => {
+    postsContainer.innerHTML = "";
+
+    postsResultCount.textContent =
+        "0 posts";
+
+    postsState.textContent =
+        "No matching results.";
+};
+
+// Render Posts
+
+const renderPosts = (posts) => {
+    postsContainer.innerHTML = "";
+    postsState.textContent = "";
+
+    posts.forEach((post) => {
+        const {
+            id,
+            title,
+            body
+        } = post;
+
+        const postCard =
+            document.createElement("article");
+
+        postCard.classList.add("post-card");
+
+        const postNumber =
+            document.createElement("span");
+
+        postNumber.classList.add("post-number");
+
+        postNumber.textContent =
+            `Post #${id}`;
+
+        const postTitle =
+            document.createElement("h3");
+
+        postTitle.textContent =
+            title;
+
+        const postBody =
+            document.createElement("p");
+
+        postBody.textContent =
+            body;
+
+        postCard.append(
+            postNumber,
+            postTitle,
+            postBody
+        );
+
+        postsContainer.appendChild(
+            postCard
+        );
+    });
+
+    postsResultCount.textContent =
+        `${posts.length} posts`;
+};
+
+// Fetch Posts
+
+const fetchPosts = async () => {
+    showPostsLoading();
+
+    try {
+        const response =
+            await fetch(POSTS_API_URL);
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP error: ${response.status}`
+            );
+        }
+
+        const data =
+            await response.json();
+
+        loadedPosts =
+            data.slice(0, 12);
+
+        if (loadedPosts.length === 0) {
+            showPostsEmpty();
+            return;
+        }
+
+        renderPosts(loadedPosts);
+
+    } catch (error) {
+        console.error(error);
+
+        showPostsError();
+    }
+};
+
+// Search Posts
+
+const searchPosts = () => {
+    const searchValue =
+        postsSearchInput.value
+            .trim()
+            .toLowerCase();
+
+    if (searchValue.length === 0) {
+        renderPosts(loadedPosts);
+        return;
+    }
+
+    const filteredPosts =
+        loadedPosts.filter((post) => {
+            const title =
+                post.title.toLowerCase();
+
+            const body =
+                post.body.toLowerCase();
+
+            return (
+                title.includes(searchValue) ||
+                body.includes(searchValue)
+            );
+        });
+
+    if (filteredPosts.length === 0) {
+        showNoMatchingPosts();
+        return;
+    }
+
+    renderPosts(filteredPosts);
+};
+
+// Reset Search
+
+const resetPostsSearch = () => {
+    postsSearchInput.value = "";
+
+    if (loadedPosts.length === 0) {
+        showPostsEmpty();
+        return;
+    }
+
+    renderPosts(loadedPosts);
+
+    postsSearchInput.focus();
+};
+
+// Posts Event Listeners
+
+if (postsSearchInput) {
+    postsSearchInput.addEventListener(
+        "input",
+        searchPosts
+    );
+}
+
+if (postsResetButton) {
+    postsResetButton.addEventListener(
+        "click",
+        resetPostsSearch
+    );
+}
+
+// Initial API Request
+
+if (postsContainer) {
+    fetchPosts();
+}
