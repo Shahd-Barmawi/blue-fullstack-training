@@ -674,3 +674,111 @@ During this task, I improved my understanding of frontend quality assurance by i
 - Document QA findings and testing evidence.
 
 ---
+# Task 06 – Modern JavaScript, Async/Await & REST API Integration
+
+## Overview
+
+Task 06 focused on transforming the website into a dynamic web application using modern JavaScript techniques and REST API integration. The implementation includes dynamic rendering, asynchronous data loading, search functionality, request state handling, and client-side filtering.
+
+---
+
+## Completed Tasks
+
+- Added a dynamic **Featured Projects** section rendered from a local JavaScript data array.
+- Implemented reusable rendering functions.
+- Added category filtering (All, Web, Mobile, UI/UX).
+- Saved the selected filter using localStorage.
+- Integrated the JSONPlaceholder REST API using **Fetch API** and **async/await**.
+- Displayed posts dynamically as responsive cards.
+- Implemented loading, success, empty, error, and retry states.
+- Added client-side search without sending additional API requests.
+- Added a result counter.
+- Added a Reset button to restore all loaded posts.
+- Tested API requests using Chrome DevTools.
+
+---
+
+## API Used
+
+**JSONPlaceholder**
+
+https://jsonplaceholder.typicode.com/posts
+
+---
+
+## Modern JavaScript Features
+
+This task uses:
+
+- Arrow Functions
+- Template Literals
+- Destructuring
+- Array Methods (`filter()`, `forEach()`)
+- Fetch API
+- Async / Await
+- Try / Catch
+- localStorage
+
+---
+
+## Features
+
+### Featured Projects
+
+- Dynamic rendering from JavaScript objects.
+- Category filtering.
+- Persistent filter selection using localStorage.
+
+### Latest Posts
+
+- REST API integration.
+- Loading state.
+- Success state.
+- Empty state.
+- Error state.
+- Retry button.
+- Search functionality.
+- Result counter.
+- Reset button.
+
+---
+
+## Screenshots
+
+### Featured Projects
+
+Dynamic project cards rendered from local JavaScript data.
+
+![Featured Projects](images/Task6Screenshots/task-06-featured-projects.png)
+
+---
+
+### REST API Posts
+
+Posts loaded dynamically from the JSONPlaceholder REST API.
+
+![REST API Posts](images/Task6Screenshots/task-06-api-posts.png)
+
+---
+
+### Search – No Results
+
+Search functionality displaying the "No matching results" state.
+
+![Search No Results](images/Task6Screenshots/task-06-search-no-results.png)
+
+---
+
+### API Error & Retry
+
+Testing the error state with the Retry functionality.
+
+![API Error Retry](images/Task6Screenshots/task-06-api-error-retry.png)
+
+---
+
+## Challenges & Lessons Learned
+
+During this task, I learned how to work with asynchronous JavaScript, consume REST APIs using Fetch and async/await, separate application logic into reusable functions, manage different request states, implement client-side searching and filtering, and improve the overall user experience through dynamic content rendering.
+
+---
