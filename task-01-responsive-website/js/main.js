@@ -536,3 +536,146 @@ if (
         statisticsSection
     );
 }
+
+// Featured Projects - Local JavaScript Data
+
+const projectsContainer = document.querySelector("#projects-container");
+
+const projects = [
+    {
+        id: 1,
+        title: "Business Website",
+        category: "web",
+        description: "A responsive company website designed to present services, company information, and contact details.",
+        technology: "HTML, CSS, JavaScript"
+    },
+    {
+        id: 2,
+        title: "E-Commerce Platform",
+        category: "web",
+        description: "An online shopping interface with product browsing, categories, and a clean responsive layout.",
+        technology: "HTML, CSS, JavaScript"
+    },
+    {
+        id: 3,
+        title: "Car Rental App",
+        category: "mobile",
+        description: "A mobile application interface for browsing cars, checking details, and managing rental requests.",
+        technology: "Flutter"
+    },
+    {
+        id: 4,
+        title: "Clinic Management App",
+        category: "mobile",
+        description: "A mobile solution designed to organize appointments and improve communication with clients.",
+        technology: "Flutter, Firebase"
+    },
+    {
+        id: 5,
+        title: "Dashboard UI Design",
+        category: "ui-ux",
+        description: "A modern dashboard interface focused on clear information presentation and easy navigation.",
+        technology: "Figma"
+    },
+    {
+        id: 6,
+        title: "Online Learning Interface",
+        category: "ui-ux",
+        description: "A user-friendly learning platform interface designed for courses, lessons, and student interaction.",
+        technology: "Figma"
+    }
+];
+
+const renderProjects = (projectList) => {
+    if (!projectsContainer) {
+        return;
+    }
+
+    projectsContainer.innerHTML = "";
+
+    projectList.forEach((project) => {
+        const {
+            title,
+            category,
+            description,
+            technology
+        } = project;
+
+        const projectCard = document.createElement("article");
+        projectCard.classList.add("project-card");
+
+        const categoryElement = document.createElement("span");
+        categoryElement.classList.add("project-category");
+        categoryElement.textContent = category.toUpperCase();
+
+        const titleElement = document.createElement("h3");
+        titleElement.textContent = title;
+
+        const descriptionElement = document.createElement("p");
+        descriptionElement.textContent = description;
+
+        const technologyElement = document.createElement("p");
+        technologyElement.classList.add("project-tech");
+        technologyElement.textContent = `Technology: ${technology}`;
+
+        projectCard.append(
+            categoryElement,
+            titleElement,
+            descriptionElement,
+            technologyElement
+        );
+
+        projectsContainer.appendChild(projectCard);
+    });
+};
+
+renderProjects(projects);
+
+const projectFilterButtons =
+    document.querySelectorAll(".project-filter");
+
+const getSavedProjectFilter = () => {
+    return localStorage.getItem("projectFilter") || "all";
+};
+
+const updateActiveProjectFilter = (selectedCategory) => {
+    projectFilterButtons.forEach((button) => {
+        button.classList.toggle(
+            "active",
+            button.dataset.category === selectedCategory
+        );
+    });
+};
+
+const filterProjects = (category) => {
+    const filteredProjects =
+        category === "all"
+            ? projects
+            : projects.filter(
+                (project) => project.category === category
+            );
+
+    renderProjects(filteredProjects);
+    updateActiveProjectFilter(category);
+
+    localStorage.setItem(
+        "projectFilter",
+        category
+    );
+};
+
+const setupProjectFilters = () => {
+    projectFilterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const selectedCategory =
+                button.dataset.category;
+
+            filterProjects(selectedCategory);
+        });
+    });
+};
+
+const savedProjectFilter = getSavedProjectFilter();
+
+setupProjectFilters();
+filterProjects(savedProjectFilter);

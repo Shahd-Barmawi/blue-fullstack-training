@@ -518,6 +518,99 @@ label {
 
 /* End Statistics Section */
 
+/* Featured Projects */
+
+.projects {
+    padding: 6rem 0;
+    background-color: #f8fbff;
+}
+
+.projects-label {
+    text-align: center;
+}
+
+.projects .section-title,
+.projects .section-description {
+    text-align: center;
+}
+
+.projects .section-description {
+    max-width: 700px;
+    margin: 1rem auto 3rem;
+}
+
+.project-filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.project-filter {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #0d6efd;
+    background: white;
+    color: #0d6efd;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.project-filter:hover,
+.project-filter.active {
+    background: #0d6efd;
+    color: white;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,.08);
+    transition: .3s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+}
+
+.project-card h3 {
+    margin-bottom: .75rem;
+    color: #0d6efd;
+}
+
+.project-card p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.project-category {
+    display: inline-block;
+    margin-bottom: .75rem;
+    padding: .3rem .8rem;
+    background: #e8f1ff;
+    color: #0d6efd;
+    border-radius: 20px;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.project-tech {
+    margin-top: 1rem;
+    font-size: .9rem;
+    color: #777;
+}
+
+/* End Featured Projects Section */
+
 /* Footer Section */
 .site-footer {
     background-color: var(--dark-background-color);
