@@ -5,6 +5,9 @@ import AboutSection from "./components/AboutSection.vue";
 import ServicesSection from "./components/ServicesSection.vue";
 import StatisticsSection from "./components/StatisticsSection.vue";
 import ProjectsSection from "./components/ProjectsSection.vue";
+import PostsSection from "./components/PostsSection.vue";
+import ContactSection from "./components/ContactSection.vue";
+import FooterSection from "./components/SiteFooter.vue";
 </script>
 
 <template>
@@ -14,4 +17,7 @@ import ProjectsSection from "./components/ProjectsSection.vue";
   <ServicesSection />
   <StatisticsSection />
   <ProjectsSection />
+  <PostsSection />
+  <ContactSection />
+  <FooterSection />
 </template>
