@@ -1,12 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { usePosts } from "../composables/usePosts";
 
-const POSTS_API_URL = "https://jsonplaceholder.typicode.com/posts";
-
-const posts = ref([]);
-const loading = ref(false);
-const error = ref("");
 const searchTerm = ref("");
+
+const { posts, loading, error, loadPosts } = usePosts();
 
 const filteredPosts = computed(() => {
   const value = searchTerm.value.trim().toLowerCase();
@@ -18,36 +16,12 @@ const filteredPosts = computed(() => {
   return posts.value.filter((post) => post.title.toLowerCase().includes(value));
 });
 
-const fetchPosts = async () => {
-  loading.value = true;
-  error.value = "";
-  posts.value = [];
-
-  try {
-    const response = await fetch(POSTS_API_URL);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    posts.value = data.slice(0, 12);
-  } catch (err) {
-    error.value = "Unable to load posts. Please try again.";
-
-    console.error(err);
-  } finally {
-    loading.value = false;
-  }
-};
-
 const resetSearch = () => {
   searchTerm.value = "";
 };
 
 onMounted(() => {
-  fetchPosts();
+  loadPosts();
 });
 </script>
 
@@ -80,7 +54,7 @@ onMounted(() => {
       <div v-else-if="error" class="posts-state">
         <p>{{ error }}</p>
 
-        <button class="button" type="button" @click="fetchPosts">Retry</button>
+        <button class="button" type="button" @click="loadPosts">Retry</button>
       </div>
 
       <div v-else-if="posts.length === 0" class="posts-state">
