@@ -3,7 +3,7 @@
 <template>
   <header class="site-header">
     <div class="container header-container">
-      <a href="#hero" class="brand">
+      <RouterLink to="/" class="brand">
         <img
           class="brand-logo"
           src="../assets/logo.png"
@@ -11,7 +11,7 @@
         />
 
         <h1>Blue Tech Solutions</h1>
-      </a>
+      </RouterLink>
 
       <button
         class="menu-toggle"
@@ -32,31 +32,43 @@
       >
         <ul class="nav-list">
           <li>
-            <a class="nav-link" href="#hero">Home</a>
+            <RouterLink class="nav-link" to="/"> Home </RouterLink>
           </li>
 
           <li>
-            <a class="nav-link" href="#about">About</a>
+            <RouterLink class="nav-link" :to="{ path: '/', hash: '#about' }">
+              About
+            </RouterLink>
           </li>
 
           <li>
-            <a class="nav-link" href="#services">Services</a>
+            <RouterLink class="nav-link" to="/services"> Services </RouterLink>
           </li>
 
           <li>
-            <a class="nav-link" href="#statistics">Statistics</a>
+            <RouterLink
+              class="nav-link"
+              :to="{ path: '/', hash: '#statistics' }"
+            >
+              Statistics
+            </RouterLink>
           </li>
 
           <li>
-            <a class="nav-link" href="#projects">Projects</a>
+            <RouterLink
+              class="nav-link"
+              :to="{ path: '/services', hash: '#projects' }"
+            >
+              Projects
+            </RouterLink>
           </li>
 
           <li>
-            <a class="nav-link" href="#posts">Posts</a>
+            <RouterLink class="nav-link" to="/posts"> Posts </RouterLink>
           </li>
 
           <li>
-            <a class="nav-link" href="#contact">Contact</a>
+            <RouterLink class="nav-link" to="/contact"> Contact </RouterLink>
           </li>
         </ul>
       </nav>
