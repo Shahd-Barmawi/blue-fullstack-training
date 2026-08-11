@@ -102,6 +102,10 @@ onMounted(() => {
           <p>
             {{ post.body }}
           </p>
+
+          <RouterLink class="button" :to="`/posts/${post.id}`">
+            View Details
+          </RouterLink>
         </article>
       </div>
     </div>

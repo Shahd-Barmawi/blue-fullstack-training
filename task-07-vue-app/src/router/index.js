@@ -12,25 +12,41 @@ const routes = [
     name: "home",
     component: HomeView,
   },
+
   {
     path: "/services",
     name: "services",
     component: ServicesView,
   },
+
   {
     path: "/posts",
     name: "posts",
     component: PostsView,
   },
+
+  {
+    path: "/posts/:id",
+    name: "post-details",
+    component: () => import("../views/PostDetailsView.vue"),
+  },
+
   {
     path: "/contact",
     name: "contact",
     component: ContactView,
   },
+
+  {
+    path: "/:pathMatch(.*)*",
+    name: "not-found",
+    component: () => import("../views/NotFoundView.vue"),
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
+
   routes,
 
   scrollBehavior(to) {
