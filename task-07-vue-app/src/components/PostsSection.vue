@@ -1,8 +1,12 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { usePosts } from "../composables/usePosts";
 
-const searchTerm = ref("");
+const route = useRoute();
+const router = useRouter();
+
+const searchTerm = ref(route.query.q || "");
 
 const { posts, loading, error, loadPosts } = usePosts();
 
@@ -15,6 +19,22 @@ const filteredPosts = computed(() => {
 
   return posts.value.filter((post) => post.title.toLowerCase().includes(value));
 });
+
+watch(searchTerm, (newValue) => {
+  const value = newValue.trim();
+
+  router.replace({
+    path: "/posts",
+    query: value ? { q: value } : {},
+  });
+});
+
+watch(
+  () => route.query.q,
+  (newQuery) => {
+    searchTerm.value = newQuery || "";
+  },
+);
 
 const resetSearch = () => {
   searchTerm.value = "";
@@ -52,7 +72,9 @@ onMounted(() => {
       <div v-if="loading" class="posts-state">Loading posts...</div>
 
       <div v-else-if="error" class="posts-state">
-        <p>{{ error }}</p>
+        <p>
+          {{ error }}
+        </p>
 
         <button class="button" type="button" @click="loadPosts">Retry</button>
       </div>
