@@ -157,3 +157,149 @@ task-07-vue-app
 ## Author
 
 **Shahd Barmawi**
+
+---
+# Task 08 – Vue Router, Dynamic Routes, and Reusable API Logic
+
+## Overview
+
+In Task 08, the existing Vue application was extended into a multi-page Single Page Application (SPA) using Vue Router.
+
+The task focused on route-level navigation, dynamic post routes, reusable API logic, route-aware search, error handling, and maintaining the existing responsive design.
+
+## Features Completed
+
+- Configured Vue Router using `createRouter` and `createWebHistory`.
+- Added route-level views for:
+  - Home
+  - Services
+  - Posts
+  - Contact
+- Used `RouterView` to render pages dynamically.
+- Replaced traditional navigation links with `RouterLink`.
+- Added lazy loading for selected route-level views.
+- Added smooth scrolling for section-based navigation.
+- Added a dynamic route for individual posts:
+  - `/posts/:id`
+- Used `useRoute()` to read the post ID from the URL.
+- Used `useRouter()` for programmatic navigation.
+- Added a reusable `usePosts` composable for API logic.
+- Added loading, error, and retry states.
+- Added a `View Details` link for each post.
+- Added a `Back to Posts` action on the post details page.
+- Added a catch-all 404 Not Found route.
+- Synchronized post search with the URL query string.
+- Search state is restored after refreshing the page.
+
+## Routes
+
+| Route | Description |
+| --- | --- |
+| `/` | Home page |
+| `/services` | Services and Projects |
+| `/posts` | Posts list |
+| `/posts/:id` | Dynamic post details |
+| `/contact` | Contact page |
+| `/:pathMatch(.*)*` | 404 Not Found page |
+
+## Reusable Composable
+
+The posts API logic was moved into:
+
+`src/composables/usePosts.js`
+
+The composable manages:
+
+- Posts data
+- Single post data
+- Loading state
+- Error state
+- Loading all posts
+- Loading a post by ID
+- Retry behavior
+
+This keeps API logic reusable and avoids duplicating the same fetching logic across components and views.
+
+## Route-Aware Search
+
+The Posts page synchronizes the search value with the URL query string.
+
+Example:
+
+`/posts?q=qui`
+
+Refreshing or directly opening this URL restores the search value and filtered results.
+
+## Error Handling
+
+The application includes handling for:
+
+- API loading states
+- API request errors
+- Retry actions
+- Invalid post IDs
+- Unknown routes using a 404 page
+
+## Evidence
+
+### Route-Level Navigation
+
+![Route-Level Navigation](screenshots/task08-routes.png)
+
+### Dynamic Post Details
+
+![Dynamic Post Details](screenshots/task08-post-details.png)
+
+### Route-Aware Search
+
+![Route-Aware Search](screenshots/task08-route-search.png)
+
+## Technologies Used
+
+- Vue 3
+- Vue Router
+- Composition API
+- JavaScript
+- REST API
+- JSONPlaceholder
+- HTML5
+- CSS3
+- Vite
+
+## API
+
+Posts are loaded from the JSONPlaceholder REST API.
+
+## Testing
+
+The application was tested for:
+
+- Route navigation
+- Browser Back and Forward navigation
+- Direct route access
+- Page refresh on nested routes
+- Dynamic post routes
+- Invalid post IDs
+- Unknown routes
+- Search query persistence
+- API loading and error states
+- Retry functionality
+- Responsive behavior
+
+## Remaining Work
+
+None.
+
+## Challenges
+
+One of the main challenges was transitioning from a single-page section-based navigation structure to Vue Router.
+
+The previous implementation relied heavily on anchor links such as `#posts`, `#services`, and `#contact`. After introducing Vue Router, these links initially conflicted with the new route-based navigation.
+
+Another challenge was understanding the difference between static routes, dynamic routes, route parameters, and query parameters. Refactoring the existing API logic into a reusable composable also required restructuring code that was previously located directly inside the component.
+
+These issues were resolved by separating route-level views, using `RouterLink`, introducing the `usePosts` composable, and synchronizing search state with the route query.
+
+## Latest Progress
+
+Task 08 has been completed with routing, dynamic post details, reusable API logic, route-aware search, error handling, and 404 handling.
