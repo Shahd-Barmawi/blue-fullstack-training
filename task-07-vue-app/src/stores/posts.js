@@ -40,6 +40,7 @@ export const usePostsStore = defineStore("posts", {
         this.posts = [...data.slice(0, 12), ...this.createdPosts];
       } catch (error) {
         this.error = "Unable to load posts. Please try again.";
+
         console.error(error);
       } finally {
         this.loading = false;
@@ -120,7 +121,6 @@ export const usePostsStore = defineStore("posts", {
         this.createdPost = newPost;
 
         this.createdPosts.push(newPost);
-
         this.posts.push(newPost);
 
         localStorage.setItem("createdPosts", JSON.stringify(this.createdPosts));

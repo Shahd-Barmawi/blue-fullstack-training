@@ -53,6 +53,14 @@ const validateForm = () => {
   return isValid;
 };
 
+const getPostData = () => {
+  return {
+    title: title.value.trim(),
+    body: body.value.trim(),
+    userId: Number(userId.value),
+  };
+};
+
 const handleSubmit = async () => {
   postsStore.submitError = "";
   postsStore.createdPost = null;
@@ -61,13 +69,7 @@ const handleSubmit = async () => {
     return;
   }
 
-  const postData = {
-    title: title.value.trim(),
-    body: body.value.trim(),
-    userId: Number(userId.value),
-  };
-
-  const success = await postsStore.submitPost(postData);
+  const success = await postsStore.submitPost(getPostData());
 
   if (success) {
     title.value = "";
@@ -81,7 +83,23 @@ const handleSubmit = async () => {
 };
 
 const retrySubmit = async () => {
-  await handleSubmit();
+  postsStore.submitError = "";
+
+  if (!validateForm()) {
+    return;
+  }
+
+  const success = await postsStore.submitPost(getPostData());
+
+  if (success) {
+    title.value = "";
+    body.value = "";
+    userId.value = "";
+
+    titleError.value = "";
+    bodyError.value = "";
+    userIdError.value = "";
+  }
 };
 
 const createAnotherPost = () => {
@@ -118,13 +136,15 @@ const createAnotherPost = () => {
 
       <form class="create-post-form" @submit.prevent="handleSubmit">
         <div class="form-group">
-          <label for="post-title">Title</label>
+          <label for="post-title"> Title </label>
 
           <input
             id="post-title"
             v-model="title"
             class="form-control"
-            :class="{ 'is-invalid': titleError }"
+            :class="{
+              'is-invalid': titleError,
+            }"
             type="text"
             placeholder="Enter post title"
             :disabled="postsStore.submitting"
@@ -136,13 +156,15 @@ const createAnotherPost = () => {
         </div>
 
         <div class="form-group">
-          <label for="post-body">Body</label>
+          <label for="post-body"> Body </label>
 
           <textarea
             id="post-body"
             v-model="body"
             class="form-control"
-            :class="{ 'is-invalid': bodyError }"
+            :class="{
+              'is-invalid': bodyError,
+            }"
             rows="6"
             maxlength="500"
             placeholder="Enter post content"
@@ -163,13 +185,15 @@ const createAnotherPost = () => {
         </div>
 
         <div class="form-group">
-          <label for="user-id">User ID</label>
+          <label for="user-id"> User ID </label>
 
           <input
             id="user-id"
             v-model="userId"
             class="form-control"
-            :class="{ 'is-invalid': userIdError }"
+            :class="{
+              'is-invalid': userIdError,
+            }"
             type="number"
             placeholder="Enter user ID"
             :disabled="postsStore.submitting"
@@ -188,10 +212,10 @@ const createAnotherPost = () => {
           <button
             class="button"
             type="button"
-            @click="retrySubmit"
             :disabled="postsStore.submitting"
+            @click="retrySubmit"
           >
-            Retry
+            {{ postsStore.submitting ? "Retrying..." : "Retry" }}
           </button>
         </div>
 
@@ -209,7 +233,7 @@ const createAnotherPost = () => {
         </div>
 
         <button
-          v-if="!postsStore.createdPost"
+          v-if="!postsStore.createdPost && !postsStore.submitError"
           class="button create-post-button"
           type="submit"
           :disabled="postsStore.submitting"
