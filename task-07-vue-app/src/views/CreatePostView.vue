@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from "vue";
+import { usePostsStore } from "../stores/posts";
 import backArrow from "../assets/back-arrow.jpg";
+
+const postsStore = usePostsStore();
 
 const title = ref("");
 const body = ref("");
@@ -14,7 +17,7 @@ const bodyCharacterCount = computed(() => {
   return body.value.length;
 });
 
-const handleSubmit = () => {
+const validateForm = () => {
   titleError.value = "";
   bodyError.value = "";
   userIdError.value = "";
@@ -47,14 +50,50 @@ const handleSubmit = () => {
     isValid = false;
   }
 
-  if (!isValid) {
+  return isValid;
+};
+
+const handleSubmit = async () => {
+  postsStore.submitError = "";
+  postsStore.createdPost = null;
+
+  if (!validateForm()) {
     return;
   }
 
-  console.log("Valid form");
-  console.log("Title:", title.value);
-  console.log("Body:", body.value);
-  console.log("User ID:", userId.value);
+  const postData = {
+    title: title.value.trim(),
+    body: body.value.trim(),
+    userId: Number(userId.value),
+  };
+
+  const success = await postsStore.submitPost(postData);
+
+  if (success) {
+    title.value = "";
+    body.value = "";
+    userId.value = "";
+
+    titleError.value = "";
+    bodyError.value = "";
+    userIdError.value = "";
+  }
+};
+
+const retrySubmit = async () => {
+  await handleSubmit();
+};
+
+const createAnotherPost = () => {
+  postsStore.clearCreatedPost();
+
+  title.value = "";
+  body.value = "";
+  userId.value = "";
+
+  titleError.value = "";
+  bodyError.value = "";
+  userIdError.value = "";
 };
 </script>
 
@@ -88,6 +127,7 @@ const handleSubmit = () => {
             :class="{ 'is-invalid': titleError }"
             type="text"
             placeholder="Enter post title"
+            :disabled="postsStore.submitting"
           />
 
           <p v-if="titleError" class="error-message">
@@ -106,6 +146,7 @@ const handleSubmit = () => {
             rows="6"
             maxlength="500"
             placeholder="Enter post content"
+            :disabled="postsStore.submitting"
           ></textarea>
 
           <div class="message-details">
@@ -131,6 +172,7 @@ const handleSubmit = () => {
             :class="{ 'is-invalid': userIdError }"
             type="number"
             placeholder="Enter user ID"
+            :disabled="postsStore.submitting"
           />
 
           <p v-if="userIdError" class="error-message">
@@ -138,8 +180,41 @@ const handleSubmit = () => {
           </p>
         </div>
 
-        <button class="button create-post-button" type="submit">
-          Create Post
+        <div v-if="postsStore.submitError" class="form-status error">
+          <p>
+            {{ postsStore.submitError }}
+          </p>
+
+          <button
+            class="button"
+            type="button"
+            @click="retrySubmit"
+            :disabled="postsStore.submitting"
+          >
+            Retry
+          </button>
+        </div>
+
+        <div v-if="postsStore.createdPost" class="form-status success">
+          <p>Post created successfully!</p>
+
+          <p>
+            Returned Post ID:
+            {{ postsStore.createdPost.id }}
+          </p>
+
+          <button class="button" type="button" @click="createAnotherPost">
+            Create Another Post
+          </button>
+        </div>
+
+        <button
+          v-if="!postsStore.createdPost"
+          class="button create-post-button"
+          type="submit"
+          :disabled="postsStore.submitting"
+        >
+          {{ postsStore.submitting ? "Creating Post..." : "Create Post" }}
         </button>
       </form>
     </div>

@@ -8,6 +8,7 @@ const postsStore = usePostsStore();
 
 onMounted(() => {
   postsStore.restoreFavorites();
+  postsStore.restoreCreatedPosts();
 });
 </script>
 
