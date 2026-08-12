@@ -1,23 +1,25 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { usePosts } from "../composables/usePosts";
+import { usePostsStore } from "../stores/posts";
 
 const route = useRoute();
 const router = useRouter();
 
-const searchTerm = ref(route.query.q || "");
+const postsStore = usePostsStore();
 
-const { posts, loading, error, loadPosts } = usePosts();
+const searchTerm = ref(route.query.q || "");
 
 const filteredPosts = computed(() => {
   const value = searchTerm.value.trim().toLowerCase();
 
   if (!value) {
-    return posts.value;
+    return postsStore.posts;
   }
 
-  return posts.value.filter((post) => post.title.toLowerCase().includes(value));
+  return postsStore.posts.filter((post) =>
+    post.title.toLowerCase().includes(value),
+  );
 });
 
 watch(searchTerm, (newValue) => {
@@ -41,7 +43,9 @@ const resetSearch = () => {
 };
 
 onMounted(() => {
-  loadPosts();
+  if (postsStore.posts.length === 0) {
+    postsStore.loadPosts();
+  }
 });
 </script>
 
@@ -69,17 +73,19 @@ onMounted(() => {
 
       <p class="posts-result-count">{{ filteredPosts.length }} posts</p>
 
-      <div v-if="loading" class="posts-state">Loading posts...</div>
+      <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
 
-      <div v-else-if="error" class="posts-state">
+      <div v-else-if="postsStore.error" class="posts-state">
         <p>
-          {{ error }}
+          {{ postsStore.error }}
         </p>
 
-        <button class="button" type="button" @click="loadPosts">Retry</button>
+        <button class="button" type="button" @click="postsStore.loadPosts">
+          Retry
+        </button>
       </div>
 
-      <div v-else-if="posts.length === 0" class="posts-state">
+      <div v-else-if="postsStore.posts.length === 0" class="posts-state">
         No posts are available.
       </div>
 
@@ -98,10 +104,20 @@ onMounted(() => {
           <p>
             {{ post.body }}
           </p>
+          <div class="post-actions">
+            <button
+              class="button favorite-button"
+              :class="{ 'is-favorite': postsStore.isFavorite(post.id) }"
+              type="button"
+              @click="postsStore.toggleFavorite(post.id)"
+            >
+              {{ postsStore.isFavorite(post.id) ? "Unfavorite" : "Favorite" }}
+            </button>
 
-          <RouterLink class="button" :to="`/posts/${post.id}`">
-            View Details
-          </RouterLink>
+            <RouterLink class="button" :to="`/posts/${post.id}`">
+              View Details
+            </RouterLink>
+          </div>
         </article>
       </div>
     </div>

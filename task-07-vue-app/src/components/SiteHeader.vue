@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+import { usePostsStore } from "../stores/posts";
+
+const postsStore = usePostsStore();
+</script>
 
 <template>
   <header class="site-header">
@@ -65,6 +69,12 @@
 
           <li>
             <RouterLink class="nav-link" to="/posts"> Posts </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink class="nav-link" to="/favorites">
+              Favorites ({{ postsStore.favoriteCount }})
+            </RouterLink>
           </li>
 
           <li>
