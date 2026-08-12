@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { usePostsStore } from "../stores/posts";
 import backArrow from "../assets/back-arrow.jpg";
 
@@ -17,40 +17,62 @@ const bodyCharacterCount = computed(() => {
   return body.value.length;
 });
 
-const validateForm = () => {
-  titleError.value = "";
-  bodyError.value = "";
-  userIdError.value = "";
-
-  let isValid = true;
-
+const validateTitle = () => {
   if (!title.value.trim()) {
     titleError.value = "Title is required.";
-    isValid = false;
   } else if (title.value.trim().length < 5) {
     titleError.value = "Title must be at least 5 characters.";
-    isValid = false;
+  } else {
+    titleError.value = "";
   }
+};
 
+const validateBody = () => {
   if (!body.value.trim()) {
     bodyError.value = "Body is required.";
-    isValid = false;
   } else if (body.value.trim().length < 10) {
     bodyError.value = "Body must be at least 10 characters.";
-    isValid = false;
+  } else {
+    bodyError.value = "";
   }
+};
 
+const validateUserId = () => {
   const userIdNumber = Number(userId.value);
 
   if (userId.value === "") {
     userIdError.value = "User ID is required.";
-    isValid = false;
   } else if (!Number.isInteger(userIdNumber) || userIdNumber <= 0) {
     userIdError.value = "User ID must be a positive number.";
-    isValid = false;
+  } else {
+    userIdError.value = "";
   }
+};
 
-  return isValid;
+watch(title, () => {
+  if (titleError.value) {
+    validateTitle();
+  }
+});
+
+watch(body, () => {
+  if (bodyError.value) {
+    validateBody();
+  }
+});
+
+watch(userId, () => {
+  if (userIdError.value) {
+    validateUserId();
+  }
+});
+
+const validateForm = () => {
+  validateTitle();
+  validateBody();
+  validateUserId();
+
+  return !titleError.value && !bodyError.value && !userIdError.value;
 };
 
 const getPostData = () => {
