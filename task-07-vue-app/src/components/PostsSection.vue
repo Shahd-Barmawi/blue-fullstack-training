@@ -60,6 +60,10 @@ onMounted(() => {
         Browse the latest articles loaded dynamically from a REST API.
       </p>
 
+      <div class="posts-actions">
+        <RouterLink class="button" to="/posts/create"> + New Post </RouterLink>
+      </div>
+
       <div class="posts-search">
         <input
           v-model="searchTerm"
@@ -104,10 +108,13 @@ onMounted(() => {
           <p>
             {{ post.body }}
           </p>
+
           <div class="post-actions">
             <button
               class="button favorite-button"
-              :class="{ 'is-favorite': postsStore.isFavorite(post.id) }"
+              :class="{
+                'is-favorite': postsStore.isFavorite(post.id),
+              }"
               type="button"
               @click="postsStore.toggleFavorite(post.id)"
             >

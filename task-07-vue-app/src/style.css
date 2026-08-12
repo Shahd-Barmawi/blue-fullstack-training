@@ -622,6 +622,12 @@ label {
   padding: 6rem 0;
 }
 
+.posts-actions {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
 .posts-search {
   display: flex;
   justify-content: center;
@@ -1136,3 +1142,106 @@ label {
 .form-status.error {
   color: #dc2626;
 }
+
+/* Create Post Section */
+
+.create-post-container {
+  max-width: 850px;
+}
+
+.create-post-navigation {
+  max-width: 700px;
+  margin: 0 auto 16px;
+}
+
+.create-post-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-dark);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.back-arrow-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  transition: transform var(--transition);
+}
+
+.create-post-back-link:hover {
+  color: var(--primary-color);
+}
+
+.create-post-back-link:hover .back-arrow-icon {
+  transform: translateX(-3px);
+}
+
+.create-post-form {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px;
+  border-radius: var(--border-radius-medium);
+  background-color: var(--background-color);
+  box-shadow: var(--shadow-medium);
+}
+
+.create-post-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.create-post-form label {
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.create-post-form .form-control {
+  width: 100%;
+}
+
+.create-post-form textarea {
+  resize: vertical;
+  min-height: 160px;
+}
+
+.form-control.is-invalid {
+  border-color: #dc2626;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+.message-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.character-count {
+  color: var(--secondary-text-color);
+  font-size: 0.85rem;
+}
+
+.create-post-button {
+  min-width: 160px;
+}
+
+@media (max-width: 768px) {
+  .create-post-form {
+    padding: 24px;
+  }
+
+  .create-post-button {
+    width: 100%;
+  }
+}
+
+/* End Create Post Section */
