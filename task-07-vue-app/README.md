@@ -303,3 +303,205 @@ These issues were resolved by separating route-level views, using `RouterLink`, 
 ## Latest Progress
 
 Task 08 has been completed with routing, dynamic post details, reusable API logic, route-aware search, error handling, and 404 handling.
+
+---
+
+## Task 09 - Pinia State Management, Forms & API Mutations
+
+### Overview
+
+This task extends the Vue application by introducing Pinia for shared state management, persistent favorites using localStorage, and a Create Post form with validation and API mutation handling.
+
+The implementation includes:
+
+- Centralized posts state using Pinia
+- Persistent favorite posts
+- Shared favorite count
+- Create Post form
+- Field-level validation
+- Live validation feedback
+- POST request using fetch and async/await
+- Loading and disabled states during submission
+- Success and error feedback
+- Retry functionality
+- Locally persisted created posts
+
+---
+
+## Pinia Store Architecture
+
+The application uses Pinia to manage shared posts and favorites state.
+
+The posts store is located at:
+
+`src/stores/posts.js`
+
+The store manages:
+
+- Posts
+- Loading state
+- API errors
+- Favorite post IDs
+- Favorite count
+- Favorite posts
+- Post submission state
+- Submission errors
+- Created posts
+
+Shared state is kept inside Pinia so that the Posts, Post Details, Favorites, and Create Post views can work with the same source of data.
+
+Temporary form values and validation messages remain local to `CreatePostView.vue`.
+
+---
+
+## Persistent Favorites
+
+Users can add and remove posts from their favorites.
+
+Favorite post IDs are stored in `localStorage` and restored when the application starts.
+
+This allows favorites to remain available after refreshing the browser.
+
+The favorite state is shared between:
+
+- Posts page
+- Post Details page
+- Favorites page
+- Navigation favorite count
+
+### Favorite Count and Post State
+
+![Favorite Count](./screenshots/favorites-count.png)
+
+### Favorites View
+
+![Favorites View](./screenshots/favorites-view.png)
+
+---
+
+## Create Post Form
+
+A route-level Create Post page is available at:
+
+`/posts/create`
+
+The form contains:
+
+- Title
+- Body
+- User ID
+
+Form values are managed using Vue `v-model`.
+
+No direct DOM selectors are used to read form values.
+
+---
+
+## Form Validation
+
+The Create Post form validates user input before submission.
+
+Validation rules include:
+
+- Title is required
+- Title cannot contain only whitespace
+- Title must contain at least 5 characters
+- Body is required
+- Body cannot contain only whitespace
+- Body must contain at least 10 characters
+- User ID is required
+- User ID must be a positive integer
+- Body content is limited to 500 characters
+
+A character counter is displayed for the Body field.
+
+Field-level validation messages are displayed next to invalid fields and are updated when the user corrects the input.
+
+### Validation Example
+
+![Create Post Validation](./screenshots/create-post-validation.png)
+
+---
+
+## POST Request
+
+Valid form data is submitted to the JSONPlaceholder Posts API using `fetch()` and `async/await`.
+
+Endpoint:
+
+`https://jsonplaceholder.typicode.com/posts`
+
+The request uses:
+
+- HTTP `POST` method
+- `Content-Type: application/json`
+- A JSON request body containing `title`, `body`, and `userId`
+
+The application checks `response.ok` before treating the request as successful.
+
+While the request is being processed:
+
+- The submit button is disabled
+- Form controls are disabled
+- The button displays a loading state
+- Duplicate submissions are prevented
+
+---
+
+## Success Flow
+
+After a successful POST request:
+
+- A success message is displayed
+- The returned post ID is displayed
+- The form fields are reset
+- A Create Another Post action is available
+- The created post is added to the local posts list
+- Locally created posts are saved in `localStorage`
+
+### Successful POST Request
+
+![Create Post Success](./screenshots/create-post-success.png)
+
+---
+
+## Error and Retry Flow
+
+If the POST request fails:
+
+- The entered form values are preserved
+- A clear error message is displayed
+- A Retry button is provided
+- The user can retry the request without re-entering the form data
+
+The failure flow was temporarily tested using an invalid endpoint to confirm that the error UI and Retry functionality worked correctly.
+
+The correct JSONPlaceholder endpoint was restored after testing.
+
+---
+
+## JSONPlaceholder Limitation
+
+JSONPlaceholder simulates successful POST requests and returns a created object, but the new record is not permanently stored on the JSONPlaceholder server.
+
+Because of this limitation, locally created posts are also stored in `localStorage` in this training application so that they can remain visible after refreshing the browser.
+
+---
+
+## Task 09 Screenshots
+
+### 1. Favorite Count
+
+![Favorite Count](./screenshots/favorites-count.png)
+
+### 2. Favorites View
+
+![Favorites View](./screenshots/favorites-view.png)
+
+### 3. Invalid Create Post Form
+
+![Create Post Validation](./screenshots/create-post-validation.png)
+
+### 4. Successful Create Post
+
+![Create Post Success](./screenshots/create-post-success.png)
