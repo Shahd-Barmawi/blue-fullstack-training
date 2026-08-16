@@ -13,15 +13,15 @@
 
 ## QA Issue Log
 
-| Issue ID | Area | Screen / Browser | Problem | Severity | Status | Fix Applied |
-| --- | --- | --- | --- | --- | --- | --- |
-| QA-01 | Hero Section | Production Preview / Chrome | The "Start a Project" button did not navigate to the Contact page. | Medium | Fixed | Replaced the anchor link with a RouterLink that navigates to the Contact page. |
-| QA-02 | Hero Section | Production Preview / Chrome | The "Explore Services" button did not navigate to the Services page. | Medium | Fixed | Replaced the anchor link with a RouterLink that navigates to the Services page. |
-| QA-03 | Navigation | Production Preview / Chrome | The navigation bar did not update the active state while scrolling between page sections. | Medium | Fixed | Added reusable scroll-based active-section tracking using a Vue composable. |
-| QA-04 | About Section | Production Preview / Chrome | The "View Our Services" button did not navigate to the Services page. | Medium | Fixed | Replaced the anchor link with a RouterLink that navigates to the Services page. |
-| QA-05 | Statistics Section | Production Preview / Chrome | Statistics displayed their final values immediately instead of animating from zero when entering the viewport. | Medium | Fixed | Added a reusable viewport-triggered statistics counter composable. |
-| QA-06 | Mobile Navigation | Production Preview / Chrome – Mobile | The mobile menu button was visible but did not open the navigation menu. | High | Fixed | Added a reusable mobile-menu composable with toggle, close-on-link-click, and Escape-key support. |
-| QA-07 | Projects Section | Production Preview / Chrome | The "View Details" buttons did not move the user to the selected project details after opening them. | Medium | Fixed | Added project detail event handling and automatic smooth scrolling to the selected project details. |
+| Issue ID | Area               | Screen / Browser                     | Problem                                                                                                        | Severity | Status | Fix Applied                                                                                         |
+| -------- | ------------------ | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- | -------- | ------ | --------------------------------------------------------------------------------------------------- |
+| QA-01    | Hero Section       | Production Preview / Chrome          | The "Start a Project" button did not navigate to the Contact page.                                             | Medium   | Fixed  | Replaced the anchor link with a RouterLink that navigates to the Contact page.                      |
+| QA-02    | Hero Section       | Production Preview / Chrome          | The "Explore Services" button did not navigate to the Services page.                                           | Medium   | Fixed  | Replaced the anchor link with a RouterLink that navigates to the Services page.                     |
+| QA-03    | Navigation         | Production Preview / Chrome          | The navigation bar did not update the active state while scrolling between page sections.                      | Medium   | Fixed  | Added reusable scroll-based active-section tracking using a Vue composable.                         |
+| QA-04    | About Section      | Production Preview / Chrome          | The "View Our Services" button did not navigate to the Services page.                                          | Medium   | Fixed  | Replaced the anchor link with a RouterLink that navigates to the Services page.                     |
+| QA-05    | Statistics Section | Production Preview / Chrome          | Statistics displayed their final values immediately instead of animating from zero when entering the viewport. | Medium   | Fixed  | Added a reusable viewport-triggered statistics counter composable.                                  |
+| QA-06    | Mobile Navigation  | Production Preview / Chrome – Mobile | The mobile menu button was visible but did not open the navigation menu.                                       | High     | Fixed  | Added a reusable mobile-menu composable with toggle, close-on-link-click, and Escape-key support.   |
+| QA-07    | Projects Section   | Production Preview / Chrome          | The "View Details" buttons did not move the user to the selected project details after opening them.           | Medium   | Fixed  | Added project detail event handling and automatic smooth scrolling to the selected project details. |
 
 ---
 
@@ -145,13 +145,13 @@
 
 ## Responsive Testing
 
-| Screen Width | Status | Notes |
-| --- | --- | --- |
-| 320px | Passed | Mobile navigation, content stacking, cards, forms, buttons, and project details display correctly with no horizontal overflow. |
-| 375px | Passed | Mobile layout works correctly with no clipped content, overlapping elements, or horizontal scrolling. |
-| 768px | Passed | Tablet layout remains stable and navigation, cards, forms, and content display correctly. |
-| 1024px | Passed | Larger tablet layout remains stable with correctly aligned content and controls. |
-| 1440px | Passed | Desktop layout displays correctly with no overflow, clipping, or alignment problems. |
+| Screen Width | Status | Notes                                                                                                                          |
+| ------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| 320px        | Passed | Mobile navigation, content stacking, cards, forms, buttons, and project details display correctly with no horizontal overflow. |
+| 375px        | Passed | Mobile layout works correctly with no clipped content, overlapping elements, or horizontal scrolling.                          |
+| 768px        | Passed | Tablet layout remains stable and navigation, cards, forms, and content display correctly.                                      |
+| 1024px       | Passed | Larger tablet layout remains stable with correctly aligned content and controls.                                               |
+| 1440px       | Passed | Desktop layout displays correctly with no overflow, clipping, or alignment problems.                                           |
 
 ---
 
@@ -211,9 +211,9 @@
 
 ## Production Build Testing
 
-- [x] `npm run build` completed successfully.
+- [x] npm run build completed successfully.
 - [x] No production build errors occurred.
-- [x] `npm run preview` completed successfully.
+- [x] npm run preview completed successfully.
 - [x] The application was tested using the production preview URL.
 - [x] Routes work correctly in production mode.
 - [x] Assets and styles load correctly.
@@ -222,7 +222,6 @@
 - [x] localStorage persistence works correctly.
 - [x] Create Post behavior works correctly.
 - [x] The browser console is clean in production preview.
-
 ---
 
 ## Final Regression Testing

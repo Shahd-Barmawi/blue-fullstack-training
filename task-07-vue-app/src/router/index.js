@@ -4,7 +4,11 @@ import HomeView from "../views/HomeView.vue";
 import ServicesView from "../views/ServicesView.vue";
 
 const PostsView = () => import("../views/PostsView.vue");
+const FavoritesView = () => import("../views/FavoritesView.vue");
+const CreatePostView = () => import("../views/CreatePostView.vue");
+const PostDetailsView = () => import("../views/PostDetailsView.vue");
 const ContactView = () => import("../views/ContactView.vue");
+const NotFoundView = () => import("../views/NotFoundView.vue");
 
 const routes = [
   {
@@ -20,6 +24,18 @@ const routes = [
   },
 
   {
+    path: "/posts/create",
+    name: "create-post",
+    component: CreatePostView,
+  },
+
+  {
+    path: "/posts/:id",
+    name: "post-details",
+    component: PostDetailsView,
+  },
+
+  {
     path: "/posts",
     name: "posts",
     component: PostsView,
@@ -28,19 +44,7 @@ const routes = [
   {
     path: "/favorites",
     name: "favorites",
-    component: () => import("../views/FavoritesView.vue"),
-  },
-
-  {
-    path: "/posts/create",
-    name: "create-post",
-    component: () => import("../views/CreatePostView.vue"),
-  },
-
-  {
-    path: "/posts/:id",
-    name: "post-details",
-    component: () => import("../views/PostDetailsView.vue"),
+    component: FavoritesView,
   },
 
   {
@@ -52,7 +56,7 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",
-    component: () => import("../views/NotFoundView.vue"),
+    component: NotFoundView,
   },
 ];
 
@@ -61,16 +65,23 @@ const router = createRouter({
 
   routes,
 
-  scrollBehavior(to) {
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+
     if (to.hash) {
       return {
         el: to.hash,
         behavior: "smooth",
+        top: 90,
       };
     }
 
     return {
       top: 0,
+      left: 0,
+      behavior: "smooth",
     };
   },
 });

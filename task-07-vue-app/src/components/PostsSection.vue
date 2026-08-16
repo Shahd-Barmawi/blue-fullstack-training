@@ -1,105 +1,86 @@
 <script setup>
-import ProjectCard from "./ProjectCard.vue";
-import { useProjects } from "../composables/useProjects";
+import { usePosts } from "../composables/usePosts";
 
-const {
-  selectedCategory,
-  selectedProject,
-  filteredProjects,
-  selectCategory,
-  handleProjectDetails,
-  closeProjectDetails,
-} = useProjects();
+const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
 </script>
 
 <template>
-  <section id="projects" class="projects section">
+  <section id="posts" class="posts section">
     <div class="container">
-      <p class="section-label projects-label">Featured Projects</p>
+      <p class="section-label">Latest Posts</p>
 
-      <h2 class="section-title">Projects Built With Modern Technologies</h2>
+      <h2 class="section-title">Latest Resources</h2>
 
       <p class="section-description">
-        Explore some of our featured digital projects across web, mobile, and
-        UI/UX solutions.
+        Browse the latest articles loaded dynamically from a REST API.
       </p>
 
-      <div class="project-filters" aria-label="Project category filters">
-        <button
-          class="project-filter"
-          :class="{ active: selectedCategory === 'all' }"
-          type="button"
-          @click="selectCategory('all')"
-        >
-          All
-        </button>
-
-        <button
-          class="project-filter"
-          :class="{ active: selectedCategory === 'web' }"
-          type="button"
-          @click="selectCategory('web')"
-        >
-          Web
-        </button>
-
-        <button
-          class="project-filter"
-          :class="{ active: selectedCategory === 'mobile' }"
-          type="button"
-          @click="selectCategory('mobile')"
-        >
-          Mobile
-        </button>
-
-        <button
-          class="project-filter"
-          :class="{ active: selectedCategory === 'ui-ux' }"
-          type="button"
-          @click="selectCategory('ui-ux')"
-        >
-          UI/UX
-        </button>
+      <div class="posts-actions">
+        <RouterLink class="button" to="/posts/create"> + New Post </RouterLink>
       </div>
 
-      <div class="projects-grid">
-        <ProjectCard
-          v-for="project in filteredProjects"
-          :key="project.id"
-          :project="project"
-          @view-details="handleProjectDetails"
+      <div class="posts-search">
+        <input
+          v-model="searchTerm"
+          type="search"
+          placeholder="Search posts..."
+          aria-label="Search posts"
         />
+
+        <button type="button" @click="resetSearch">Reset</button>
       </div>
 
-      <div
-        v-if="selectedProject"
-        id="selected-project"
-        class="selected-project"
-      >
-        <p class="section-label">Project Details</p>
+      <p class="posts-result-count">{{ filteredPosts.length }} posts</p>
 
-        <h3>
-          {{ selectedProject.title }}
-        </h3>
+      <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
 
+      <div v-else-if="postsStore.error" class="posts-state">
         <p>
-          {{ selectedProject.description }}
+          {{ postsStore.error }}
         </p>
 
-        <p>
-          Category:
-          <strong>
-            {{ selectedProject.category }}
-          </strong>
-        </p>
-
-        <button
-          class="button button-secondary"
-          type="button"
-          @click="closeProjectDetails"
-        >
-          Close Details
+        <button class="button" type="button" @click="postsStore.retryPosts">
+          Retry
         </button>
+      </div>
+
+      <div v-else-if="postsStore.posts.length === 0" class="posts-state">
+        No posts are available.
+      </div>
+
+      <div v-else-if="filteredPosts.length === 0" class="posts-state">
+        No matching results.
+      </div>
+
+      <div v-else class="posts-grid">
+        <article v-for="post in filteredPosts" :key="post.id" class="post-card">
+          <span> Post #{{ post.id }} </span>
+
+          <h3>
+            {{ post.title }}
+          </h3>
+
+          <p>
+            {{ post.body }}
+          </p>
+
+          <div class="post-actions">
+            <button
+              class="button favorite-button"
+              :class="{
+                'is-favorite': postsStore.isFavorite(post.id),
+              }"
+              type="button"
+              @click="postsStore.toggleFavorite(post.id)"
+            >
+              {{ postsStore.isFavorite(post.id) ? "Unfavorite" : "Favorite" }}
+            </button>
+
+            <RouterLink class="button" :to="`/posts/${post.id}`">
+              View Details
+            </RouterLink>
+          </div>
+        </article>
       </div>
     </div>
   </section>
