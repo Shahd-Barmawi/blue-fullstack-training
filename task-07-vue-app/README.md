@@ -505,3 +505,207 @@ Because of this limitation, locally created posts are also stored in `localStora
 ### 4. Successful Create Post
 
 ![Create Post Success](./screenshots/create-post-success.png)
+
+---
+
+# Task 10 – Frontend QA, Testing, and Handover
+
+## Overview
+
+Task 10 focused on frontend quality assurance, automated testing, production validation, accessibility, responsive behavior, and final project stabilization.
+
+The application was fully tested in the production environment using the Vite preview server to ensure that all features implemented in previous tasks continued to work correctly.
+
+---
+
+## QA Process
+
+The QA process covered the following areas:
+
+- Functional testing
+- Navigation testing
+- Responsive testing
+- Accessibility testing
+- API testing
+- State management testing
+- Browser console testing
+- Production build testing
+- Final regression testing
+
+---
+
+## Issues Identified and Fixed
+
+The following issues were discovered during the QA process and were fixed before the final submission:
+
+| Issue | Resolution |
+| --- | --- |
+| Hero buttons did not navigate correctly. | Replaced anchor elements with RouterLink components. |
+| Active navigation did not update while scrolling. | Added reusable active-navigation logic. |
+| About section button did not navigate correctly. | Replaced the anchor link with RouterLink. |
+| Statistics counters did not animate correctly. | Added a reusable statistics counter composable. |
+| Mobile navigation menu did not open. | Added reusable mobile-menu logic. |
+| Project details interaction required improvements. | Updated the project interaction flow and verified the final behavior. |
+
+---
+
+## Accessibility Testing
+
+The following accessibility checks were completed successfully:
+
+- Keyboard navigation using Tab and Shift + Tab
+- Navigation link accessibility
+- Button accessibility
+- Form accessibility
+- Visible focus indicators
+- Mobile menu closing with the Escape key
+- Image alternative text verification
+- Form labels verification
+- Validation message visibility
+- Content readability across different screen sizes
+
+---
+
+## Responsive Testing
+
+The application was tested using the following screen sizes:
+
+| Screen Width | Result |
+| --- | --- |
+| 320px | Passed |
+| 375px | Passed |
+| 768px | Passed |
+| 1024px | Passed |
+| 1440px | Passed |
+
+The following areas were verified:
+
+- Navigation
+- Mobile menu
+- Forms
+- Posts
+- Favorites
+- Project cards
+- Buttons
+- Content layout
+
+No horizontal scrolling, clipping, or overlapping elements were found.
+
+---
+
+## Automated Testing
+
+The application uses:
+
+- Vitest
+- Vue Test Utils
+- jsdom
+
+The automated tests covered:
+
+- Adding favorites
+- Removing favorites
+- Restoring favorites from localStorage
+- Empty Create Post validation
+- Minimum-length validation
+- Successful Create Post submission
+
+### Test Results
+
+```text
+Test Files: 2 passed
+Tests: 6 passed
+```
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+---
+
+## Environment Configuration
+
+The application uses an environment variable for the API configuration.
+
+Create a `.env` file:
+
+```env
+VITE_API_BASE_URL=https://jsonplaceholder.typicode.com
+```
+
+The required configuration is also documented inside:
+
+```text
+.env.example
+```
+
+---
+
+## Production Build Verification
+
+Production verification was completed successfully.
+
+Commands used:
+
+```bash
+npm run build
+npm run preview
+```
+
+The following features were verified in the production environment:
+
+- Routing
+- API requests
+- Pinia state management
+- localStorage persistence
+- Favorites
+- Create Post
+- Post Details
+- Search functionality
+
+---
+
+## Final Regression Testing
+
+The following features were verified after all fixes were completed:
+
+- Home page
+- Services page
+- Projects section
+- Posts page
+- Post Details page
+- Favorites page
+- Create Post page
+- Contact page
+- Navigation
+- Active navigation
+- Mobile navigation
+- Search functionality
+- Favorites synchronization
+- Create Post validation
+- Retry functionality
+- Responsive behavior
+- Console and network requests
+
+All regression tests passed successfully.
+
+---
+
+## Known Issues
+
+No unresolved issues were identified after the final testing process.
+
+---
+
+## Final Status
+
+- Production build: Passed
+- Automated tests: Passed
+- QA testing: Passed
+- Accessibility testing: Passed
+- Responsive testing: Passed
+- Final regression testing: Passed
+
+The frontend is ready for deployment and future development.
