@@ -1,76 +1,15 @@
 <script setup>
-import { ref, computed } from "vue";
 import ProjectCard from "./ProjectCard.vue";
+import { useProjects } from "../composables/useProjects";
 
-const selectedCategory = ref("all");
-const selectedProject = ref(null);
-
-const projects = [
-  {
-    id: 1,
-    title: "Business Website",
-    category: "web",
-    description: "Responsive business website for modern companies.",
-  },
-  {
-    id: 2,
-    title: "E-Commerce Platform",
-    category: "web",
-    description:
-      "Online shopping interface with product browsing and categories.",
-  },
-  {
-    id: 3,
-    title: "Car Rental App",
-    category: "mobile",
-    description: "Mobile application for browsing and renting vehicles.",
-  },
-  {
-    id: 4,
-    title: "Clinic Management App",
-    category: "mobile",
-    description:
-      "Application for managing appointments and client communication.",
-  },
-  {
-    id: 5,
-    title: "Dashboard UI",
-    category: "ui-ux",
-    description: "Modern dashboard focused on clear information presentation.",
-  },
-  {
-    id: 6,
-    title: "Learning Platform UI",
-    category: "ui-ux",
-    description: "User-friendly interface for online courses and lessons.",
-  },
-  {
-    id: 7,
-    title: "Portfolio Website",
-    category: "web",
-    description: "Personal portfolio website with responsive layouts.",
-  },
-  {
-    id: 8,
-    title: "Booking App",
-    category: "mobile",
-    description: "Mobile booking interface for services and reservations.",
-  },
-];
-
-const filteredProjects = computed(() => {
-  if (selectedCategory.value === "all") {
-    return projects;
-  }
-
-  return projects.filter(
-    (project) => project.category === selectedCategory.value,
-  );
-});
-
-const handleProjectDetails = (project) => {
-  selectedProject.value = project;
-};
+const {
+  selectedCategory,
+  selectedProject,
+  filteredProjects,
+  selectCategory,
+  handleProjectDetails,
+  closeProjectDetails,
+} = useProjects();
 </script>
 
 <template>
@@ -90,7 +29,7 @@ const handleProjectDetails = (project) => {
           class="project-filter"
           :class="{ active: selectedCategory === 'all' }"
           type="button"
-          @click="selectedCategory = 'all'"
+          @click="selectCategory('all')"
         >
           All
         </button>
@@ -99,7 +38,7 @@ const handleProjectDetails = (project) => {
           class="project-filter"
           :class="{ active: selectedCategory === 'web' }"
           type="button"
-          @click="selectedCategory = 'web'"
+          @click="selectCategory('web')"
         >
           Web
         </button>
@@ -108,7 +47,7 @@ const handleProjectDetails = (project) => {
           class="project-filter"
           :class="{ active: selectedCategory === 'mobile' }"
           type="button"
-          @click="selectedCategory = 'mobile'"
+          @click="selectCategory('mobile')"
         >
           Mobile
         </button>
@@ -117,7 +56,7 @@ const handleProjectDetails = (project) => {
           class="project-filter"
           :class="{ active: selectedCategory === 'ui-ux' }"
           type="button"
-          @click="selectedCategory = 'ui-ux'"
+          @click="selectCategory('ui-ux')"
         >
           UI/UX
         </button>
@@ -132,19 +71,35 @@ const handleProjectDetails = (project) => {
         />
       </div>
 
-      <div v-if="selectedProject" class="selected-project">
-        <h3>Selected Project</h3>
+      <div
+        v-if="selectedProject"
+        id="selected-project"
+        class="selected-project"
+      >
+        <p class="section-label">Project Details</p>
 
-        <p>
-          You selected:
-          <strong>
-            {{ selectedProject.title }}
-          </strong>
-        </p>
+        <h3>
+          {{ selectedProject.title }}
+        </h3>
 
         <p>
           {{ selectedProject.description }}
         </p>
+
+        <p>
+          Category:
+          <strong>
+            {{ selectedProject.category }}
+          </strong>
+        </p>
+
+        <button
+          class="button button-secondary"
+          type="button"
+          @click="closeProjectDetails"
+        >
+          Close Details
+        </button>
       </div>
     </div>
   </section>

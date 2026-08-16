@@ -21,7 +21,9 @@
           development tools to build reliable and user-friendly products.
         </p>
 
-        <a href="#services" class="button"> View Our Services </a>
+        <RouterLink to="/services" class="button">
+          View Our Services
+        </RouterLink>
       </div>
 
       <div class="about-highlights">

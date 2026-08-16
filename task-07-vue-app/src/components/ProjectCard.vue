@@ -8,7 +8,7 @@ const props = defineProps({
 
 const emit = defineEmits(["view-details"]);
 
-const handleViewDetails = () => {
+const viewDetails = () => {
   emit("view-details", props.project);
 };
 </script>
@@ -19,11 +19,15 @@ const handleViewDetails = () => {
       {{ project.category }}
     </span>
 
-    <h3>{{ project.title }}</h3>
+    <h3>
+      {{ project.title }}
+    </h3>
 
-    <p>{{ project.description }}</p>
+    <p>
+      {{ project.description }}
+    </p>
 
-    <button class="button" type="button" @click="handleViewDetails">
+    <button class="button" type="button" @click="viewDetails">
       View Details
     </button>
   </article>

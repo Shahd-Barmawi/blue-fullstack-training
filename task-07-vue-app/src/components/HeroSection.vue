@@ -14,11 +14,13 @@
         </p>
 
         <div class="hero-actions">
-          <a href="#contact" class="button"> Start a Project </a>
+          <RouterLink to="/contact" class="button">
+            Start a Project
+          </RouterLink>
 
-          <a href="#services" class="button button-secondary">
+          <RouterLink to="/services" class="button button-secondary">
             Explore Services
-          </a>
+          </RouterLink>
         </div>
       </div>
     </div>
