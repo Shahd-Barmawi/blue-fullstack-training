@@ -235,9 +235,15 @@
 - [x] Post Details page works correctly.
 - [x] Favorites page works correctly.
 - [x] Create Post page works correctly.
+- [x] Contact page works correctly.
 - [x] Navigation works correctly.
-- [x] Active navigation works correctly.
+- [x] Active navigation updates correctly.
 - [x] Mobile navigation works correctly.
+- [x] Search and query-string synchronization still work.
+- [x] Favorites remain synchronized across views.
+- [x] Favorites persist after refresh.
+- [x] Create Post validation still works.
+- [x] Create Post success and retry flows still work.
 - [x] No broken links remain.
 - [x] No horizontal scrolling exists at tested widths.
 - [x] No overlapping elements remain.
@@ -249,4 +255,4 @@
 
 ## Known Issues
 
-None identified after final regression testing.
+No unresolved issues were identified after the final QA and regression testing process.
