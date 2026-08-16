@@ -1,7 +1,10 @@
 import { defineStore } from "pinia";
 
-const POSTS_API_URL = "https://jsonplaceholder.typicode.com/posts";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+const POSTS_API_URL = `${API_BASE_URL}/posts`;
+
+const INVALID_POSTS_API_URL = `${API_BASE_URL}/invalid-posts`;
 export const usePostsStore = defineStore("posts", {
   state: () => ({
     posts: [],
