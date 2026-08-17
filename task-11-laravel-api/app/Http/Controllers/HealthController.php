@@ -8,7 +8,8 @@ class HealthController extends Controller
     {
         return response()->json([
             "status" => "ok",
+            "application_name" => "Task 11 Laravel API",
             "message" => "Backend is running successfully",
-        ]);
+        ], 200);
     }
 }
