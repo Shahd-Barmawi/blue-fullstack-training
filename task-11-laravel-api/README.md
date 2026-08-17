@@ -281,3 +281,275 @@ All issues were resolved successfully.
 ### Contact Validation Error
 
 ![Contact Validation Error](screenshots/task11-contact-validation-error.png)
+
+---
+
+# Task 12 - Laravel Database, Migrations, Eloquent Models & CRUD REST API
+
+## Task Objective
+
+The goal of this task was to convert the basic Laravel API from Task 11 into a database-driven REST API using MySQL, migrations, Eloquent models, controllers, validation, and CRUD operations.
+
+---
+
+## Project Continuation
+
+Task 12 was implemented inside the existing `task-11-laravel-api` project without creating a new Laravel application.
+
+---
+
+## Database Setup
+
+The application was connected to a local MySQL database.
+
+Database configuration:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3308
+DB_DATABASE=task12_laravel_api
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+> Important: The `.env` file and database credentials were not uploaded to GitHub.
+
+---
+
+## Posts Database Structure
+
+The `posts` table was created using Laravel migrations.
+
+| Field      | Type      |
+| ---------- | --------- |
+| id         | bigint    |
+| title      | string    |
+| body       | text      |
+| status     | enum      |
+| created_at | timestamp |
+| updated_at | timestamp |
+
+The `status` field supports two values:
+
+- draft
+- published
+
+---
+
+## Migration Commands
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+Refresh the database:
+
+```bash
+php artisan migrate:fresh
+```
+
+---
+
+## Eloquent Model
+
+A `Post` Eloquent model was created.
+
+The following fields were configured using `$fillable`:
+
+```php
+protected $fillable = [
+    'title',
+    'body',
+    'status',
+];
+```
+
+All database operations were implemented using Eloquent ORM instead of raw SQL queries.
+
+---
+
+## Seeder
+
+Sample data was generated using `PostSeeder`.
+
+Run the seeder:
+
+```bash
+php artisan db:seed
+```
+
+Three sample posts were inserted into the database.
+
+---
+
+## CRUD REST API Endpoints
+
+| Method | Endpoint          | Description       |
+| ------ | ----------------- | ----------------- |
+| GET    | `/api/posts`      | Return all posts  |
+| GET    | `/api/posts/{id}` | Return one post   |
+| POST   | `/api/posts`      | Create a new post |
+| PUT    | `/api/posts/{id}` | Update a post     |
+| PATCH  | `/api/posts/{id}` | Update a post     |
+| DELETE | `/api/posts/{id}` | Delete a post     |
+
+---
+
+## Request Validation
+
+Validation rules:
+
+| Field  | Rule                         |
+| ------ | ---------------------------- |
+| title  | required, string, max:255    |
+| body   | required, string             |
+| status | required, draft or published |
+
+Invalid requests return validation errors instead of saving incorrect data.
+
+---
+
+## Not Found Handling
+
+When a post does not exist, the API returns:
+
+```json
+{
+    "message": "Post not found"
+}
+```
+
+with HTTP status code:
+
+```text
+404 Not Found
+```
+
+---
+
+## Running the Project
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+The API runs on:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+# Testing Screenshots
+
+## 1. Successful Migrations
+
+The database migrations were executed successfully.
+
+![Successful Migrations](screenshots/Successful%20Migrations.png)
+
+---
+
+## 2. Sample Records in Database
+
+The database was populated with sample posts.
+
+![Sample Records in Database](screenshots/Sample%20Records%20in%20Database.png)
+
+---
+
+## 3. GET - List Posts
+
+Returns all posts.
+
+![GET - List Posts](screenshots/GET%20-%20List%20Posts.png)
+
+---
+
+## 4. GET - View One Post
+
+Returns one post by ID.
+
+![GET - View One Post](screenshots/GET%20-%20View%20One%20Post.png)
+
+---
+
+## 5. POST - Create Post
+
+Creates a new post.
+
+![POST - Create Post](screenshots/POST%20-%20Create%20Post.png)
+
+---
+
+## 6. POST - Validation Error
+
+Returns validation errors for invalid data.
+
+![POST - Validation Error](screenshots/POST%20-%20Validation%20Error.png)
+
+---
+
+## 7. PUT - Update Post
+
+Updates an existing post.
+
+![PUT - Update Post](screenshots/PUT%20-%20Update%20Post.png)
+
+---
+
+## 8. DELETE - Delete Post
+
+Deletes an existing post.
+
+![DELETE - Delete Post](screenshots/DELETE%20-%20Delete%20Post.png)
+
+---
+
+## 9. GET - 404 Not Found
+
+Returns a 404 response for a non-existing post.
+
+![GET - 404 Not Found](screenshots/GET%20-%20404%20Not%20Found.png)
+
+---
+
+## 10. PUT - 404 Not Found
+
+Returns a 404 response when updating a non-existing post.
+
+![PUT - 404 Not Found](screenshots/PUT%20-%20404%20Not%20Found.png)
+
+---
+
+## 11. DELETE - 404 Not Found
+
+Returns a 404 response when deleting a non-existing post.
+
+![DELETE - 404 Not Found](screenshots/DELETE%20-%20404%20Not%20Found.png)
+
+---
+
+## Testing Summary
+
+The API was tested using Postman.
+
+The following operations were verified:
+
+- List all posts.
+- View one post.
+- Create a valid post.
+- Create an invalid post.
+- Update a post.
+- Delete a post.
+- Request a non-existing post.
+- Update a non-existing post.
+- Delete a non-existing post.
+
+All Task 12 requirements were completed successfully.
