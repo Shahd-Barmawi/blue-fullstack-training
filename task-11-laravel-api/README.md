@@ -1,66 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task 11 - Laravel API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+This project was developed as part of the Blue Full Stack Training program.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The goal of this task is to build a simple REST API using Laravel and return JSON responses through API endpoints.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Technologies Used
 
-## Learning Laravel
+- Laravel 12
+- PHP 8.2.12
+- Composer 2.10.2
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Clone the repository and install the dependencies:
 
-## Laravel Sponsors
+```bash
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Run the Development Server
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+php artisan serve
+```
 
-## Contributing
+The application will run at:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```text
+http://127.0.0.1:8000
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## API Endpoints
 
-## Security Vulnerabilities
+### Health Endpoint
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```http
+GET /api/health
+```
 
-## License
+Response:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```json
+{
+  "status": "ok",
+  "message": "Backend is running successfully"
+}
+```
+
+---
+
+### Training Endpoint
+
+```http
+GET /api/training
+```
+
+Response:
+
+```json
+{
+  "intern": "Shahd Barmawi",
+  "task": "Task 11",
+  "framework": "Laravel"
+}
+```
+
+---
+
+## Project Structure
+
+```text
+app
+├── Http
+│   └── Controllers
+│       ├── HealthController.php
+│       └── TrainingController.php
+
+routes
+├── api.php
+├── web.php
+└── console.php
+
+screenshots
+├── task11-laravel-running.png
+├── task11-health-endpoint.png
+└── task11-training-endpoint.png
+```
+
+---
+
+---
+
+## Screenshots
+
+### 1. Laravel Application Running
+
+**File:** `screenshots/task11-laravel-running.png`
+
+This screenshot shows the Laravel development server running successfully in the browser using:
+
+```bash
+php artisan serve
+```
+
+The application is accessible through:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+### 2. Health Controller Endpoint
+
+**File:** `screenshots/task11-health-controller.png`
+
+This screenshot demonstrates the `/api/health` endpoint after moving the response logic from the route file to `HealthController`.
+
+The endpoint returns a JSON response confirming that the backend is running correctly.
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "message": "Backend is running successfully"
+}
+```
+
+---
+
+### 3. Health API Endpoint
+
+**File:** `screenshots/task11-health-endpoint.png`
+
+This screenshot verifies that the `/api/health` API route is registered correctly and returns a successful JSON response through the browser.
+
+---
+
+### 4. Training API Endpoint
+
+**File:** `screenshots/task11-training-endpoint.png`
+
+This screenshot shows the `/api/training` endpoint.
+
+The endpoint returns training-related information as a JSON response.
+
+Expected response:
+
+```json
+{
+  "intern": "Shahd Barmawi",
+  "task": "Task 11",
+  "framework": "Laravel"
+}
+```
+
+## Testing
+
+The following items were tested successfully:
+
+- Laravel installation
+- Composer configuration
+- API routing
+- Controller responses
+- JSON responses
+- Database migration
+
+---
+
+## Status
+
+Task 11 setup completed successfully.
