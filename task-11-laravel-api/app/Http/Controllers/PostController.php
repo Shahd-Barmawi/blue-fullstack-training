@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -9,12 +10,14 @@ class PostController extends Controller
 {
     public function index()
     {
-        return response()->json(Post::all(), 200);
+        $posts = Post::with('category')->get();
+
+        return PostResource::collection($posts);
     }
 
     public function show($id)
     {
-        $post = Post::find($id);
+        $post = Post::with('category')->find($id);
 
         if (!$post) {
             return response()->json([
@@ -22,7 +25,7 @@ class PostController extends Controller
             ], 404);
         }
 
-        return response()->json($post, 200);
+        return new PostResource($post);
     }
 
     public function store(Request $request)
@@ -30,12 +33,17 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
-            'status' => 'required|in:draft,published'
+            'status' => 'required|in:draft,published',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $post = Post::create($validated);
 
-        return response()->json($post, 201);
+        $post->load('category');
+
+        return (new PostResource($post))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function update(Request $request, $id)
@@ -51,12 +59,15 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
-            'status' => 'required|in:draft,published'
+            'status' => 'required|in:draft,published',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $post->update($validated);
 
-        return response()->json($post, 200);
+        $post->load('category');
+
+        return new PostResource($post);
     }
 
     public function destroy($id)
