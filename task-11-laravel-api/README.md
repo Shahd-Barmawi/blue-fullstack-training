@@ -553,3 +553,278 @@ The following operations were verified:
 - Delete a non-existing post.
 
 All Task 12 requirements were completed successfully.
+
+---
+
+# Task 13 - Laravel Relationships, API Resources, Filtering & Pagination
+
+## Overview
+
+Task 13 extends the Laravel REST API developed in Tasks 11 and 12 by introducing relationships between database entities and improving the API response structure.
+
+The backend was enhanced by adding categories, Eloquent relationships, API resources, filtering, sorting, pagination, validation, and eager loading.
+
+---
+
+## Categories Table and Model
+
+A new `categories` table was created using a Laravel migration.
+
+### Categories Table Structure
+
+| Column     | Type      |
+| ---------- | --------- |
+| id         | bigint    |
+| name       | string    |
+| slug       | string    |
+| created_at | timestamp |
+| updated_at | timestamp |
+
+A `Category` Eloquent model was created, and sample categories were added using a database seeder.
+
+Sample categories:
+
+- Technology
+- Business
+- Education
+
+---
+
+## Post and Category Relationship
+
+The `posts` table was updated by adding a `category_id` foreign key using a new migration.
+
+The relationship between the models was implemented as follows:
+
+### Category Model
+
+```php
+public function posts()
+{
+    return $this->hasMany(Post::class);
+}
+```
+
+### Post Model
+
+```php
+public function category()
+{
+    return $this->belongsTo(Category::class);
+}
+```
+
+All seeded posts were linked to valid categories.
+
+---
+
+## Categories API Endpoint
+
+The following endpoint was added to retrieve all categories:
+
+```http
+GET /api/categories
+```
+
+The response returns all available categories in JSON format.
+
+---
+
+## Create and Update Request Fields
+
+The following fields are required when creating or updating a post:
+
+| Field       | Type    | Required |
+| ----------- | ------- | -------- |
+| title       | string  | Yes      |
+| body        | string  | Yes      |
+| status      | string  | Yes      |
+| category_id | integer | Yes      |
+
+### Example Request
+
+```json
+{
+    "title": "Laravel API",
+    "body": "Testing a valid category.",
+    "status": "published",
+    "category_id": 1
+}
+```
+
+Validation rules:
+
+```php
+$request->validate([
+    'title' => 'required|string|max:255',
+    'body' => 'required|string',
+    'status' => 'required|in:draft,published',
+    'category_id' => 'required|exists:categories,id',
+]);
+```
+
+---
+
+## Laravel API Resources
+
+Two Laravel API Resources were created:
+
+- PostResource
+- CategoryResource
+
+The Post API response includes:
+
+- id
+- title
+- body
+- status
+- category information
+- created_at
+- updated_at
+
+The same resource structure is used for both single-post and post-list responses.
+
+---
+
+## Available Posts Query Parameters
+
+| Parameter   | Description                  |
+| ----------- | ---------------------------- |
+| search      | Search posts by title        |
+| status      | Filter posts by status       |
+| category_id | Filter posts by category     |
+| sort_by     | Sort by title or created_at  |
+| direction   | Sort direction (asc or desc) |
+| page        | Navigate between pages       |
+
+---
+
+## Filtering Examples
+
+### Search by Title
+
+```http
+GET /api/posts?search=First
+```
+
+### Filter by Status
+
+```http
+GET /api/posts?status=published
+```
+
+### Filter by Category
+
+```http
+GET /api/posts?category_id=2
+```
+
+### Combined Filters
+
+```http
+GET /api/posts?status=published&category_id=1
+```
+
+---
+
+## Sorting Options
+
+### Sort by Title
+
+```http
+GET /api/posts?sort_by=title&direction=asc
+```
+
+### Sort by Creation Date
+
+```http
+GET /api/posts?sort_by=created_at&direction=desc
+```
+
+Only `title` and `created_at` are allowed as sorting fields.
+
+Only `asc` and `desc` are allowed as sorting directions.
+
+---
+
+## Pagination Behavior
+
+The posts endpoint uses Laravel pagination.
+
+The default page size is:
+
+```text
+2 posts per page
+```
+
+Examples:
+
+```http
+GET /api/posts?page=1
+```
+
+```http
+GET /api/posts?page=2
+```
+
+The API response includes pagination metadata and navigation links.
+
+---
+
+## Query Efficiency
+
+Eloquent eager loading was implemented using:
+
+```php
+Post::with('category');
+```
+
+This prevents unnecessary database queries when returning posts with their categories.
+
+---
+
+## Migration and Seeding Commands
+
+Run the following commands to recreate the database locally:
+
+```bash
+php artisan migrate:fresh
+```
+
+Seed the database:
+
+```bash
+php artisan db:seed
+```
+
+Or run both commands together:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+---
+
+## API Testing
+
+The following functionality was tested using Postman:
+
+- GET categories
+- GET posts with category information
+- Create a post with a valid category
+- Update a post with a valid category
+- Invalid category validation
+- Search by title
+- Filter by status
+- Filter by category
+- Combined filters
+- Sorting
+- Pagination
+- GET single post
+- DELETE post
+
+---
+
+## Status
+
+**Task 13 completed successfully.**
