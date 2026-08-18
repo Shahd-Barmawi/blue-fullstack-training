@@ -4,6 +4,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
 
 Route::get("/health", [HealthController::class, "index"]);
 
@@ -35,3 +36,5 @@ Route::put("/posts/{id}", [PostController::class, "update"]);
 Route::patch("/posts/{id}", [PostController::class, "update"]);
 
 Route::delete("/posts/{id}", [PostController::class, "destroy"]);
+
+Route::get('/categories', [CategoryController::class, 'index']);

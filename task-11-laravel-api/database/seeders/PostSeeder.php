@@ -16,18 +16,21 @@ class PostSeeder extends Seeder
             'title' => 'First Post',
             'body' => 'This is the first sample post.',
             'status' => 'published',
+            'category_id' => 1,
         ]);
 
         Post::create([
             'title' => 'Second Post',
             'body' => 'This is the second sample post.',
             'status' => 'draft',
+            'category_id' => 2,
         ]);
 
         Post::create([
             'title' => 'Third Post',
             'body' => 'This is the third sample post.',
             'status' => 'published',
+            'category_id' => 3,
         ]);
     }
 }
