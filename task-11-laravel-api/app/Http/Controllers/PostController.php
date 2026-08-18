@@ -8,9 +8,36 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with('category')->get();
+        $query = Post::with('category');
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $sortBy = $request->get('sort_by', 'created_at');
+        $direction = $request->get('direction', 'desc');
+
+        $allowedSortFields = ['created_at', 'title'];
+        $allowedDirections = ['asc', 'desc'];
+
+        if (
+            in_array($sortBy, $allowedSortFields)
+            && in_array($direction, $allowedDirections)
+        ) {
+            $query->orderBy($sortBy, $direction);
+        }
+
+        $posts = $query->paginate(2);
 
         return PostResource::collection($posts);
     }
