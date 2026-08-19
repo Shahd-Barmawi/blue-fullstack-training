@@ -64,7 +64,7 @@ class PostController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        $post = Post::create($validated);
+        $post = $request->user()->posts()->create($validated);
 
         $post->load('category');
 
