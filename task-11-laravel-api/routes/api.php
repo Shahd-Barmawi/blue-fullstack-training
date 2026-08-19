@@ -30,23 +30,27 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-
-    Route::get('/me', [AuthController::class, 'me']);
-});
-
-// Posts CRUD API
+// Public Read Routes
 Route::get('/posts', [PostController::class, 'index']);
 
 Route::get('/posts/{id}', [PostController::class, 'show']);
 
-Route::post('/posts', [PostController::class, 'store']);
-
-Route::put('/posts/{id}', [PostController::class, 'update']);
-
-Route::patch('/posts/{id}', [PostController::class, 'update']);
-
-Route::delete('/posts/{id}', [PostController::class, 'destroy']);
-
 Route::get('/categories', [CategoryController::class, 'index']);
+
+// Protected Routes
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Authentication
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/me', [AuthController::class, 'me']);
+
+    // Posts Write Operations
+    Route::post('/posts', [PostController::class, 'store']);
+
+    Route::put('/posts/{id}', [PostController::class, 'update']);
+
+    Route::patch('/posts/{id}', [PostController::class, 'update']);
+
+    Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+});
