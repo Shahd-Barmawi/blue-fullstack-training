@@ -7,11 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -19,7 +14,18 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'body' => $this->body,
             'status' => $this->status,
-            'category' => new CategoryResource($this->whenLoaded('category')),
+
+            'category' => new CategoryResource(
+                $this->whenLoaded('category')
+            ),
+
+            'author' => $this->whenLoaded('user', function () {
+                return [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                ];
+            }),
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

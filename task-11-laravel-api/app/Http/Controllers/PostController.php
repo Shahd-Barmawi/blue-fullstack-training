@@ -10,7 +10,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Post::with('category');
+        $query = Post::with(['category', 'user']);
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -44,7 +44,7 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $post = Post::with('category')->find($id);
+        $post = Post::with(['category', 'user'])->find($id);
 
         if (!$post) {
             return response()->json([
@@ -66,7 +66,7 @@ class PostController extends Controller
 
         $post = $request->user()->posts()->create($validated);
 
-        $post->load('category');
+        $post->load(['category', 'user']);
 
         return (new PostResource($post))
             ->response()
@@ -83,6 +83,12 @@ class PostController extends Controller
             ], 404);
         }
 
+        abort_if(
+            $request->user()->cannot('update', $post),
+            403,
+            'Forbidden'
+        );
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
@@ -92,12 +98,12 @@ class PostController extends Controller
 
         $post->update($validated);
 
-        $post->load('category');
+        $post->load(['category', 'user']);
 
         return new PostResource($post);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         $post = Post::find($id);
 
@@ -106,6 +112,12 @@ class PostController extends Controller
                 'message' => 'Post not found'
             ], 404);
         }
+
+        abort_if(
+            $request->user()->cannot('delete', $post),
+            403,
+            'Forbidden'
+        );
 
         $post->delete();
 
