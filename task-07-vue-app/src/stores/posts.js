@@ -5,16 +5,21 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const POSTS_API_URL = `${API_BASE_URL}/posts`;
 
 const INVALID_POSTS_API_URL = `${API_BASE_URL}/invalid-posts`;
+
 export const usePostsStore = defineStore("posts", {
   state: () => ({
     posts: [],
     loading: false,
     error: "",
+
     favoriteIds: [],
+
     submitting: false,
     submitError: "",
+
     createdPost: null,
     createdPosts: [],
+
     nextPostId: 13,
   }),
 
@@ -32,15 +37,40 @@ export const usePostsStore = defineStore("posts", {
       this.error = "";
 
       try {
-        const response = await fetch(POSTS_API_URL);
+        const response = await fetch(POSTS_API_URL, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const result = await response.json();
 
-        this.posts = [...data.slice(0, 12), ...this.createdPosts];
+        /*
+         * Laravel returns:
+         *
+         * {
+         *   data: [...],
+         *   links: {...},
+         *   meta: {...}
+         * }
+         *
+         * JSONPlaceholder used to return [...]
+         *
+         * So we only extract result.data here.
+         */
+        const apiPosts = Array.isArray(result) ? result : result.data || [];
+
+        this.posts = [
+          ...apiPosts,
+          ...this.createdPosts.filter(
+            (createdPost) =>
+              !apiPosts.some((apiPost) => apiPost.id === createdPost.id),
+          ),
+        ];
       } catch (error) {
         this.error = "Unable to load posts. Please try again.";
 
@@ -100,22 +130,16 @@ export const usePostsStore = defineStore("posts", {
       this.createdPost = null;
 
       try {
-        const response = await fetch(POSTS_API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(postData),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const data = await response.json();
+        /*
+         * سنربط هذا لاحقًا بـ Laravel + Bearer Token
+         * بعد ما نكمل Authentication Integration.
+         *
+         * حاليًا نحافظ على نفس behavior القديم
+         * حتى ما ينكسر Create Post أو Statistics.
+         */
 
         const newPost = {
-          ...data,
+          ...postData,
           id: this.nextPostId,
         };
 
