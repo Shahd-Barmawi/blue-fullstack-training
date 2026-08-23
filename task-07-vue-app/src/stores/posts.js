@@ -9,6 +9,7 @@ const INVALID_POSTS_API_URL = `${API_BASE_URL}/invalid-posts`;
 export const usePostsStore = defineStore("posts", {
   state: () => ({
     posts: [],
+
     loading: false,
     error: "",
 
@@ -50,29 +51,28 @@ export const usePostsStore = defineStore("posts", {
         const result = await response.json();
 
         /*
-         * Laravel returns:
+         * Laravel paginated response:
          *
          * {
          *   data: [...],
          *   links: {...},
          *   meta: {...}
          * }
-         *
-         * JSONPlaceholder used to return [...]
-         *
-         * So we only extract result.data here.
          */
+
         const apiPosts = Array.isArray(result) ? result : result.data || [];
 
-        this.posts = [
-          ...apiPosts,
-          ...this.createdPosts.filter(
-            (createdPost) =>
-              !apiPosts.some((apiPost) => apiPost.id === createdPost.id),
-          ),
-        ];
+        /*
+         * Posts shown in the interface now come
+         * directly from Laravel.
+         *
+         * We no longer merge old locally-created
+         * posts from localStorage into API data.
+         */
+        this.posts = apiPosts;
       } catch (error) {
-        this.error = "Unable to load posts. Please try again.";
+        this.error =
+          "Unable to load posts from the Laravel API. Please try again.";
 
         console.error(error);
       } finally {
@@ -110,6 +110,13 @@ export const usePostsStore = defineStore("posts", {
       }
     },
 
+    /*
+     * We keep these temporarily because the
+     * existing Create Post view may still use them.
+     *
+     * In Part 9 we will replace this local behavior
+     * with the real Laravel POST /api/posts request.
+     */
     restoreCreatedPosts() {
       const savedPosts = localStorage.getItem("createdPosts");
 
@@ -130,14 +137,6 @@ export const usePostsStore = defineStore("posts", {
       this.createdPost = null;
 
       try {
-        /*
-         * سنربط هذا لاحقًا بـ Laravel + Bearer Token
-         * بعد ما نكمل Authentication Integration.
-         *
-         * حاليًا نحافظ على نفس behavior القديم
-         * حتى ما ينكسر Create Post أو Statistics.
-         */
-
         const newPost = {
           ...postData,
           id: this.nextPostId,
@@ -148,7 +147,6 @@ export const usePostsStore = defineStore("posts", {
         this.createdPost = newPost;
 
         this.createdPosts.push(newPost);
-        this.posts.push(newPost);
 
         localStorage.setItem("createdPosts", JSON.stringify(this.createdPosts));
 

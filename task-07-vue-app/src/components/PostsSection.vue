@@ -15,7 +15,7 @@ const { isAuthenticated } = useAuthState();
       <h2 class="section-title">Latest Resources</h2>
 
       <p class="section-description">
-        Browse the latest articles loaded dynamically from a REST API.
+        Browse the latest articles loaded from the Laravel REST API.
       </p>
 
       <div v-if="isAuthenticated" class="posts-actions">
@@ -35,24 +35,31 @@ const { isAuthenticated } = useAuthState();
 
       <p class="posts-result-count">{{ filteredPosts.length }} posts</p>
 
+      <!-- Loading State -->
       <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
 
+      <!-- Error State -->
       <div v-else-if="postsStore.error" class="posts-state">
-        <p>{{ postsStore.error }}</p>
+        <p>
+          {{ postsStore.error }}
+        </p>
 
         <button class="button" type="button" @click="postsStore.retryPosts">
           Retry
         </button>
       </div>
 
+      <!-- Empty State -->
       <div v-else-if="postsStore.posts.length === 0" class="posts-state">
         No posts are available.
       </div>
 
+      <!-- Search Empty State -->
       <div v-else-if="filteredPosts.length === 0" class="posts-state">
         No matching results.
       </div>
 
+      <!-- Posts -->
       <div v-else class="posts-grid">
         <article v-for="post in filteredPosts" :key="post.id" class="post-card">
           <span> Post #{{ post.id }} </span>
@@ -64,6 +71,23 @@ const { isAuthenticated } = useAuthState();
           <p>
             {{ post.body }}
           </p>
+
+          <div class="post-meta">
+            <p>
+              <strong>Status:</strong>
+              {{ post.status }}
+            </p>
+
+            <p>
+              <strong>Category:</strong>
+              {{ post.category?.name || "No category" }}
+            </p>
+
+            <p>
+              <strong>Author:</strong>
+              {{ post.author?.name || "Unknown author" }}
+            </p>
+          </div>
 
           <div class="post-actions">
             <button
