@@ -828,3 +828,450 @@ The following functionality was tested using Postman:
 ## Status
 
 **Task 13 completed successfully.**
+
+---
+
+# Task 14 – Authentication, Authorization, and Post Ownership
+
+This task extends the Laravel REST API with token-based authentication, protected post operations, post ownership, and authorization.
+
+## User Setup
+
+The existing Laravel `User` model and `users` table are used for authentication.
+
+Test users are created through database seeding to make authentication and authorization testing consistent.
+
+Example test users:
+
+```text
+User A
+Email: usera@example.com
+Password: password123
+
+User B
+Email: userb@example.com
+Password: password123
+```
+
+Passwords are securely hashed before being stored in the database.
+
+Sensitive environment configuration is stored in the `.env` file, which is excluded from Git tracking.
+
+---
+
+## Laravel Sanctum Authentication
+
+Laravel Sanctum is used to provide token-based API authentication.
+
+After a successful login or registration, the API returns an access token.
+
+The token can be used in Postman or another API client using:
+
+```text
+Authorization: Bearer YOUR_TOKEN
+```
+
+---
+
+## Authentication Endpoints
+
+### Register
+
+```http
+POST /api/register
+```
+
+Example request:
+
+```json
+{
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123"
+}
+```
+
+A successful registration creates the user securely and returns the created user and an authentication token.
+
+---
+
+### Login
+
+```http
+POST /api/login
+```
+
+Example request:
+
+```json
+{
+    "email": "usera@example.com",
+    "password": "password123"
+}
+```
+
+Successful login returns the authenticated user and an access token.
+
+Invalid credentials return:
+
+```json
+{
+    "message": "Invalid credentials"
+}
+```
+
+with HTTP status:
+
+```text
+401 Unauthorized
+```
+
+---
+
+### Authenticated User
+
+```http
+GET /api/me
+```
+
+Requires:
+
+```text
+Authorization: Bearer YOUR_TOKEN
+```
+
+Returns basic information about the currently authenticated user.
+
+---
+
+### Logout
+
+```http
+POST /api/logout
+```
+
+Requires:
+
+```text
+Authorization: Bearer YOUR_TOKEN
+```
+
+Logout deletes the current access token.
+
+Example response:
+
+```json
+{
+    "message": "Logged out successfully"
+}
+```
+
+The invalidated token can no longer access protected endpoints.
+
+---
+
+## Protected Post Endpoints
+
+Public read operations remain accessible without authentication:
+
+```http
+GET /api/posts
+GET /api/posts/{id}
+GET /api/categories
+```
+
+Post write operations require authentication:
+
+```http
+POST /api/posts
+PUT /api/posts/{id}
+PATCH /api/posts/{id}
+DELETE /api/posts/{id}
+```
+
+A request to a protected endpoint without a valid token returns:
+
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+with:
+
+```text
+401 Unauthorized
+```
+
+---
+
+## Post Ownership
+
+Each post belongs to a user through the `user_id` foreign key.
+
+Eloquent relationships:
+
+```text
+User has many Posts
+Post belongs to User
+```
+
+When an authenticated user creates a post, ownership is assigned automatically using the authenticated user.
+
+Example post creation request:
+
+```http
+POST /api/posts
+```
+
+```json
+{
+    "title": "My Post",
+    "body": "This post belongs to the authenticated user.",
+    "status": "published",
+    "category_id": 1
+}
+```
+
+The client does not provide `user_id`.
+
+The backend automatically assigns the authenticated user as the post owner.
+
+---
+
+## Post Authorization
+
+Post authorization is implemented using `PostPolicy`.
+
+Only the owner of a post can update or delete it.
+
+### Allowed
+
+If User A owns a post:
+
+```text
+User A → Update → Allowed
+User A → Delete → Allowed
+```
+
+### Forbidden
+
+If User B attempts to modify User A's post:
+
+```text
+User B → Update User A's Post → Forbidden
+User B → Delete User A's Post → Forbidden
+```
+
+The API returns:
+
+```text
+403 Forbidden
+```
+
+This keeps authentication and authorization separate:
+
+```text
+401 Unauthorized
+```
+
+means the request does not contain valid authentication.
+
+```text
+403 Forbidden
+```
+
+means the user is authenticated but does not have permission to perform the requested operation.
+
+---
+
+## Post API Resource
+
+Post responses include useful information about the post author.
+
+Example:
+
+```json
+{
+    "id": 5,
+    "title": "User A Ownership Post",
+    "body": "This post belongs to User A.",
+    "status": "published",
+    "category": {
+        "id": 1,
+        "name": "Technology",
+        "slug": "technology"
+    },
+    "author": {
+        "id": 1,
+        "name": "User A"
+    },
+    "created_at": "2026-08-23T06:59:11.000000Z",
+    "updated_at": "2026-08-23T06:59:11.000000Z"
+}
+```
+
+Only safe author information is exposed.
+
+Passwords, authentication tokens, and other sensitive information are not included in post responses.
+
+---
+
+## Filtering and Pagination
+
+The existing post filtering, sorting, search, and pagination functionality remains available after adding authentication and authorization.
+
+Examples:
+
+### Filter by Status
+
+```http
+GET /api/posts?status=published
+```
+
+### Filter by Category
+
+```http
+GET /api/posts?category_id=1
+```
+
+### Search
+
+```http
+GET /api/posts?search=post
+```
+
+### Sorting
+
+```http
+GET /api/posts?sort_by=title&direction=asc
+```
+
+Available sorting fields:
+
+```text
+created_at
+title
+```
+
+Available directions:
+
+```text
+asc
+desc
+```
+
+### Pagination
+
+```http
+GET /api/posts?page=2
+```
+
+Posts are currently paginated with 2 posts per page.
+
+---
+
+## Validation and Security
+
+The API includes validation and security protections for authentication and post operations.
+
+Implemented protections include:
+
+- Registration validates required user information.
+- User emails must be unique.
+- Passwords are hashed before being stored.
+- Invalid login credentials are rejected.
+- Protected post operations require a valid Sanctum token.
+- Users cannot update or delete posts owned by another user.
+- Post ownership is assigned by the backend instead of accepting arbitrary `user_id` values from the client.
+- Passwords and authentication tokens are not exposed in post API resources.
+- The `.env` file is ignored by Git and is not tracked in the repository.
+- Existing filtering and pagination continue to work after the authentication changes.
+
+---
+
+## Database Migration and Seeding
+
+To recreate the database locally:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+This recreates the database tables and runs the configured seeders.
+
+To run migrations without rebuilding the entire database:
+
+```bash
+php artisan migrate
+```
+
+To run the database seeders:
+
+```bash
+php artisan db:seed
+```
+
+---
+
+## Running the API Locally
+
+Install dependencies:
+
+```bash
+composer install
+```
+
+Create the environment file if needed:
+
+```bash
+cp .env.example .env
+```
+
+Generate the Laravel application key:
+
+```bash
+php artisan key:generate
+```
+
+Configure the database connection in `.env`, then run:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+The API will normally be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+## Task 14 Testing Summary
+
+The following scenarios were tested successfully:
+
+- Successful user login and token generation.
+- Accessing `/api/me` using a valid token.
+- Rejecting invalid login credentials.
+- Creating a post while authenticated.
+- Automatically assigning the authenticated user as the post owner.
+- Rejecting protected post requests without authentication.
+- Allowing a post owner to update their own post.
+- Rejecting another user's attempt to update the post.
+- Allowing a post owner to delete their own post.
+- Rejecting another user's attempt to delete the post.
+- Logging out and invalidating the current access token.
+- Returning author information without exposing sensitive data.
+- Filtering posts after authentication changes.
+- Pagination after authentication changes.
+- Confirming that `.env` is not tracked by Git.
+
+---
