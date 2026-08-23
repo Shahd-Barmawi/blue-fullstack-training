@@ -1,13 +1,36 @@
 <script setup>
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+
 import { usePostsStore } from "../stores/posts";
 import { useActiveNavigation } from "../composables/useActiveNavigation";
 import { useMobileMenu } from "../composables/useMobileMenu";
+import { useAuthState } from "../composables/useAuthState";
+
+const router = useRouter();
 
 const postsStore = usePostsStore();
 
 const { activeSection } = useActiveNavigation();
 
 const { isMenuOpen, toggleMenu, closeMenu } = useMobileMenu();
+
+const { isAuthenticated, user, fetchAuthenticatedUser, logout } =
+  useAuthState();
+
+const handleLogout = async () => {
+  await logout();
+
+  closeMenu();
+
+  await router.push("/login");
+};
+
+onMounted(async () => {
+  if (isAuthenticated.value) {
+    await fetchAuthenticatedUser();
+  }
+});
 </script>
 
 <template>
@@ -37,9 +60,9 @@ const { isMenuOpen, toggleMenu, closeMenu } = useMobileMenu();
       </button>
 
       <nav
+        id="main-navigation"
         class="main-navigation"
         :class="{ 'is-open': isMenuOpen }"
-        id="main-navigation"
         aria-label="Main navigation"
       >
         <ul class="nav-list">
@@ -109,7 +132,7 @@ const { isMenuOpen, toggleMenu, closeMenu } = useMobileMenu();
             </RouterLink>
           </li>
 
-          <li>
+          <li v-if="isAuthenticated">
             <RouterLink
               class="nav-link"
               :class="{ active: activeSection === 'favorites' }"
@@ -129,6 +152,33 @@ const { isMenuOpen, toggleMenu, closeMenu } = useMobileMenu();
             >
               Contact
             </RouterLink>
+          </li>
+
+          <li v-if="!isAuthenticated">
+            <RouterLink
+              class="nav-link"
+              :class="{ active: activeSection === 'login' }"
+              to="/login"
+              @click="closeMenu"
+            >
+              Login
+            </RouterLink>
+          </li>
+
+          <li v-if="isAuthenticated" class="auth-user-item">
+            <span class="auth-user-name">
+              {{ user?.name || "User" }}
+            </span>
+          </li>
+
+          <li v-if="isAuthenticated">
+            <button
+              class="nav-link logout-button"
+              type="button"
+              @click="handleLogout"
+            >
+              Logout
+            </button>
           </li>
         </ul>
       </nav>

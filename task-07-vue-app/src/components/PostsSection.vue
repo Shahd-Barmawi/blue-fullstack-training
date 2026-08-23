@@ -1,7 +1,10 @@
 <script setup>
 import { usePosts } from "../composables/usePosts";
+import { useAuthState } from "../composables/useAuthState";
 
 const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
+
+const { isAuthenticated } = useAuthState();
 </script>
 
 <template>
@@ -15,7 +18,7 @@ const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
         Browse the latest articles loaded dynamically from a REST API.
       </p>
 
-      <div class="posts-actions">
+      <div v-if="isAuthenticated" class="posts-actions">
         <RouterLink class="button" to="/posts/create"> + New Post </RouterLink>
       </div>
 
@@ -35,9 +38,7 @@ const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
       <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
 
       <div v-else-if="postsStore.error" class="posts-state">
-        <p>
-          {{ postsStore.error }}
-        </p>
+        <p>{{ postsStore.error }}</p>
 
         <button class="button" type="button" @click="postsStore.retryPosts">
           Retry
@@ -66,6 +67,7 @@ const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
 
           <div class="post-actions">
             <button
+              v-if="isAuthenticated"
               class="button favorite-button"
               :class="{
                 'is-favorite': postsStore.isFavorite(post.id),

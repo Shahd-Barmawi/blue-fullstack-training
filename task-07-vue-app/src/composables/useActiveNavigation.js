@@ -27,6 +27,13 @@ export const useActiveNavigation = () => {
   };
 
   const setActiveRoute = () => {
+    activeSection.value = "";
+
+    if (route.path === "/login") {
+      activeSection.value = "login";
+      return;
+    }
+
     if (route.path.startsWith("/posts")) {
       activeSection.value = "posts";
       return;

@@ -4,10 +4,17 @@ import HomeView from "../views/HomeView.vue";
 import ServicesView from "../views/ServicesView.vue";
 
 const PostsView = () => import("../views/PostsView.vue");
+
 const FavoritesView = () => import("../views/FavoritesView.vue");
+
 const CreatePostView = () => import("../views/CreatePostView.vue");
+
 const PostDetailsView = () => import("../views/PostDetailsView.vue");
+
 const ContactView = () => import("../views/ContactView.vue");
+
+const LoginView = () => import("../views/LoginView.vue");
+
 const NotFoundView = () => import("../views/NotFoundView.vue");
 
 const routes = [
@@ -27,6 +34,9 @@ const routes = [
     path: "/posts/create",
     name: "create-post",
     component: CreatePostView,
+    meta: {
+      requiresAuth: true,
+    },
   },
 
   {
@@ -45,12 +55,21 @@ const routes = [
     path: "/favorites",
     name: "favorites",
     component: FavoritesView,
+    meta: {
+      requiresAuth: true,
+    },
   },
 
   {
     path: "/contact",
     name: "contact",
     component: ContactView,
+  },
+
+  {
+    path: "/login",
+    name: "login",
+    component: LoginView,
   },
 
   {
@@ -84,6 +103,16 @@ const router = createRouter({
       behavior: "smooth",
     };
   },
+});
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem("authToken");
+
+  if (to.meta.requiresAuth && !token) {
+    return {
+      name: "login",
+    };
+  }
 });
 
 export default router;
