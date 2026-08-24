@@ -784,6 +784,41 @@ label {
   border-color: #f59e0b;
 }
 
+.posts-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+.posts-pagination .button {
+  min-width: 48px;
+  min-height: 46px;
+  padding: 10px 16px;
+}
+
+.posts-pagination .pagination-page.active,
+.posts-pagination .pagination-page:disabled {
+  background-color: var(--primary-dark);
+  opacity: 1;
+  cursor: default;
+  transform: none;
+}
+
+.posts-pagination .button:disabled:not(.pagination-page) {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.posts-page-info {
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 600;
+}
+
 /* End Latest Posts Section */
 
 /* Footer Section */
@@ -1280,6 +1315,15 @@ label {
 
   .login-card {
     padding: 30px 24px;
+  }
+
+  .posts-pagination {
+    gap: 8px;
+  }
+
+  .posts-pagination .button {
+    min-width: 44px;
+    padding: 9px 12px;
   }
 }
 

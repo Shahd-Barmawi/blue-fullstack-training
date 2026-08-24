@@ -11,6 +11,23 @@ export const usePostsStore = defineStore("posts", {
     loading: false,
     error: "",
 
+    /*
+     * Backend filtering / pagination state
+     */
+    currentPage: 1,
+    lastPage: 1,
+    perPage: 0,
+    totalPosts: 0,
+
+    paginationLinks: {
+      first: null,
+      last: null,
+      prev: null,
+      next: null,
+    },
+
+    currentSearch: "",
+
     favoriteIds: [],
 
     // Create
@@ -36,18 +53,52 @@ export const usePostsStore = defineStore("posts", {
     favoritePosts: (state) => {
       return state.posts.filter((post) => state.favoriteIds.includes(post.id));
     },
+
+    hasPreviousPage: (state) => {
+      return state.currentPage > 1;
+    },
+
+    hasNextPage: (state) => {
+      return state.currentPage < state.lastPage;
+    },
   },
 
   actions: {
     // =========================
     // LOAD POSTS
+    // Backend Search + Pagination
     // =========================
-    async loadPosts() {
+    async loadPosts(options = {}) {
       this.loading = true;
       this.error = "";
 
+      const page = Number(options.page || 1);
+
+      const search =
+        options.search !== undefined
+          ? String(options.search).trim()
+          : this.currentSearch;
+
+      this.currentSearch = search;
+
       try {
-        const response = await fetch(POSTS_API_URL, {
+        const params = new URLSearchParams();
+
+        params.set("page", String(page));
+
+        /*
+         * Task 13 backend search parameter.
+         *
+         * If your Laravel backend used another
+         * parameter name, change "search" here.
+         */
+        if (search) {
+          params.set("search", search);
+        }
+
+        const requestUrl = `${POSTS_API_URL}?${params.toString()}`;
+
+        const response = await fetch(requestUrl, {
           headers: {
             Accept: "application/json",
           },
@@ -59,9 +110,47 @@ export const usePostsStore = defineStore("posts", {
 
         const result = await response.json();
 
-        const apiPosts = Array.isArray(result) ? result : result.data || [];
+        /*
+         * Laravel paginated resource response:
+         *
+         * {
+         *   data: [...],
+         *   links: {...},
+         *   meta: {...}
+         * }
+         */
+        this.posts = Array.isArray(result) ? result : result.data || [];
 
-        this.posts = apiPosts;
+        if (result.meta) {
+          this.currentPage = Number(result.meta.current_page) || 1;
+
+          this.lastPage = Number(result.meta.last_page) || 1;
+
+          this.perPage = Number(result.meta.per_page) || 0;
+
+          this.totalPosts = Number(result.meta.total) || 0;
+        } else {
+          this.currentPage = 1;
+          this.lastPage = 1;
+          this.perPage = this.posts.length;
+          this.totalPosts = this.posts.length;
+        }
+
+        if (result.links) {
+          this.paginationLinks = {
+            first: result.links.first || null,
+            last: result.links.last || null,
+            prev: result.links.prev || null,
+            next: result.links.next || null,
+          };
+        } else {
+          this.paginationLinks = {
+            first: null,
+            last: null,
+            prev: null,
+            next: null,
+          };
+        }
       } catch (error) {
         this.error =
           "Unable to load posts from the Laravel API. Please try again.";
@@ -73,7 +162,44 @@ export const usePostsStore = defineStore("posts", {
     },
 
     retryPosts() {
-      return this.loadPosts();
+      return this.loadPosts({
+        page: this.currentPage,
+        search: this.currentSearch,
+      });
+    },
+
+    goToPage(page) {
+      const targetPage = Number(page);
+
+      if (
+        !Number.isInteger(targetPage) ||
+        targetPage < 1 ||
+        targetPage > this.lastPage ||
+        targetPage === this.currentPage
+      ) {
+        return;
+      }
+
+      return this.loadPosts({
+        page: targetPage,
+        search: this.currentSearch,
+      });
+    },
+
+    goToNextPage() {
+      if (!this.hasNextPage) {
+        return;
+      }
+
+      return this.goToPage(this.currentPage + 1);
+    },
+
+    goToPreviousPage() {
+      if (!this.hasPreviousPage) {
+        return;
+      }
+
+      return this.goToPage(this.currentPage - 1);
     },
 
     // =========================
@@ -92,6 +218,7 @@ export const usePostsStore = defineStore("posts", {
 
         if (response.status === 404) {
           this.error = "Post not found.";
+
           return null;
         }
 
@@ -177,7 +304,9 @@ export const usePostsStore = defineStore("posts", {
 
           headers: {
             "Content-Type": "application/json",
+
             Accept: "application/json",
+
             Authorization: `Bearer ${token}`,
           },
 
@@ -216,7 +345,14 @@ export const usePostsStore = defineStore("posts", {
 
         this.createdPost = newPost;
 
-        this.posts.unshift(newPost);
+        /*
+         * Reload page 1 from Laravel because
+         * pagination is now server-driven.
+         */
+        await this.loadPosts({
+          page: 1,
+          search: this.currentSearch,
+        });
 
         return true;
       } catch (error) {
@@ -259,7 +395,9 @@ export const usePostsStore = defineStore("posts", {
 
           headers: {
             "Content-Type": "application/json",
+
             Accept: "application/json",
+
             Authorization: `Bearer ${token}`,
           },
 
@@ -308,8 +446,6 @@ export const usePostsStore = defineStore("posts", {
 
         if (index !== -1) {
           this.posts[index] = updated;
-        } else {
-          this.posts.push(updated);
         }
 
         return true;
@@ -351,6 +487,7 @@ export const usePostsStore = defineStore("posts", {
 
           headers: {
             Accept: "application/json",
+
             Authorization: `Bearer ${token}`,
           },
         });
@@ -380,8 +517,6 @@ export const usePostsStore = defineStore("posts", {
 
         const id = Number(postId);
 
-        this.posts = this.posts.filter((post) => post.id !== id);
-
         this.favoriteIds = this.favoriteIds.filter(
           (favoriteId) => favoriteId !== id,
         );
@@ -390,6 +525,26 @@ export const usePostsStore = defineStore("posts", {
           "favoritePostIds",
           JSON.stringify(this.favoriteIds),
         );
+
+        /*
+         * Reload current page from backend.
+         */
+        await this.loadPosts({
+          page: this.currentPage,
+          search: this.currentSearch,
+        });
+
+        /*
+         * If deleting the last item on a page
+         * caused the current page to disappear,
+         * return to the new last page.
+         */
+        if (this.posts.length === 0 && this.currentPage > 1) {
+          await this.loadPosts({
+            page: this.currentPage - 1,
+            search: this.currentSearch,
+          });
+        }
 
         return true;
       } catch (error) {

@@ -6,19 +6,33 @@ import { useAuthState } from "../composables/useAuthState";
 
 const router = useRouter();
 
-const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
+const {
+  postsStore,
+
+  searchTerm,
+  filteredPosts,
+
+  resetSearch,
+
+  changePage,
+  nextPage,
+  previousPage,
+} = usePosts();
 
 const { isAuthenticated, user } = useAuthState();
 
 const isOwner = (post) => {
   return (
-    isAuthenticated.value && user.value && post.author?.id === user.value.id
+    isAuthenticated.value &&
+    user.value &&
+    Number(post.author?.id) === Number(user.value.id)
   );
 };
 
 const editPost = (postId) => {
   router.push({
     path: `/posts/${postId}`,
+
     query: {
       edit: "1",
     },
@@ -51,12 +65,14 @@ const deletePost = async (postId) => {
         Browse the latest articles loaded from the Laravel REST API.
       </p>
 
+      <!-- Authenticated actions -->
       <div v-if="isAuthenticated" class="posts-actions">
         <RouterLink class="button" to="/posts/create"> + New Post </RouterLink>
 
         <RouterLink class="button" to="/my-posts"> My Posts </RouterLink>
       </div>
 
+      <!-- Backend Search -->
       <div class="posts-search">
         <input
           v-model="searchTerm"
@@ -68,10 +84,16 @@ const deletePost = async (postId) => {
         <button type="button" @click="resetSearch">Reset</button>
       </div>
 
-      <p class="posts-result-count">{{ filteredPosts.length }} posts</p>
+      <!-- Backend result information -->
+      <p class="posts-result-count">
+        {{ postsStore.totalPosts }}
+        total posts
+      </p>
 
+      <!-- Loading -->
       <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
 
+      <!-- Error -->
       <div v-else-if="postsStore.error" class="posts-state">
         <p>
           {{ postsStore.error }}
@@ -82,19 +104,25 @@ const deletePost = async (postId) => {
         </button>
       </div>
 
-      <div v-else-if="postsStore.posts.length === 0" class="posts-state">
-        No posts are available.
-      </div>
-
+      <!-- Empty backend result -->
       <div v-else-if="filteredPosts.length === 0" class="posts-state">
-        No matching results.
+        {{
+          searchTerm.trim() ? "No matching results." : "No posts are available."
+        }}
       </div>
 
+      <!-- Delete Error -->
       <div v-if="postsStore.deleteError" class="form-status error">
         {{ postsStore.deleteError }}
       </div>
 
-      <div v-else class="posts-grid">
+      <!-- Posts -->
+      <div
+        v-if="
+          !postsStore.loading && !postsStore.error && filteredPosts.length > 0
+        "
+        class="posts-grid"
+      >
         <article v-for="post in filteredPosts" :key="post.id" class="post-card">
           <span> Post #{{ post.id }} </span>
 
@@ -108,17 +136,20 @@ const deletePost = async (postId) => {
 
           <div class="post-meta">
             <p>
-              <strong>Status:</strong>
+              <strong> Status: </strong>
+
               {{ post.status }}
             </p>
 
             <p>
-              <strong>Category:</strong>
+              <strong> Category: </strong>
+
               {{ post.category?.name || "No category" }}
             </p>
 
             <p>
-              <strong>Author:</strong>
+              <strong> Author: </strong>
+
               {{ post.author?.name || "Unknown author" }}
             </p>
           </div>
@@ -161,6 +192,56 @@ const deletePost = async (postId) => {
           </div>
         </article>
       </div>
+
+      <!-- Backend Pagination -->
+      <div
+        v-if="
+          !postsStore.loading && !postsStore.error && postsStore.lastPage > 1
+        "
+        class="posts-pagination"
+      >
+        <button
+          class="button"
+          type="button"
+          :disabled="!postsStore.hasPreviousPage"
+          @click="previousPage"
+        >
+          Previous
+        </button>
+
+        <button
+          v-for="page in postsStore.lastPage"
+          :key="page"
+          class="button pagination-page"
+          :class="{
+            active: page === postsStore.currentPage,
+          }"
+          type="button"
+          :disabled="page === postsStore.currentPage"
+          @click="changePage(page)"
+        >
+          {{ page }}
+        </button>
+
+        <button
+          class="button"
+          type="button"
+          :disabled="!postsStore.hasNextPage"
+          @click="nextPage"
+        >
+          Next
+        </button>
+      </div>
+
+      <p
+        v-if="!postsStore.loading && postsStore.totalPosts > 0"
+        class="posts-page-info"
+      >
+        Page
+        {{ postsStore.currentPage }}
+        of
+        {{ postsStore.lastPage }}
+      </p>
     </div>
   </section>
 </template>
