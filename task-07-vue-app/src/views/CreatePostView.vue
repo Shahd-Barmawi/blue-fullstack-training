@@ -1,17 +1,24 @@
 <script setup>
 import { ref, computed, watch } from "vue";
+
 import { usePostsStore } from "../stores/posts";
+import { useCategories } from "../composables/useCategories";
+
 import backArrow from "../assets/back-arrow.jpg";
 
 const postsStore = usePostsStore();
 
+const { categories, categoriesLoading, categoriesError, loadCategories } =
+  useCategories();
+
 const title = ref("");
 const body = ref("");
-const userId = ref("");
+const categoryId = ref("");
+const status = ref("draft");
 
 const titleError = ref("");
 const bodyError = ref("");
-const userIdError = ref("");
+const categoryError = ref("");
 
 const bodyCharacterCount = computed(() => {
   return body.value.length;
@@ -37,15 +44,11 @@ const validateBody = () => {
   }
 };
 
-const validateUserId = () => {
-  const userIdNumber = Number(userId.value);
-
-  if (userId.value === "") {
-    userIdError.value = "User ID is required.";
-  } else if (!Number.isInteger(userIdNumber) || userIdNumber <= 0) {
-    userIdError.value = "User ID must be a positive number.";
+const validateCategory = () => {
+  if (!categoryId.value) {
+    categoryError.value = "Category is required.";
   } else {
-    userIdError.value = "";
+    categoryError.value = "";
   }
 };
 
@@ -61,26 +64,38 @@ watch(body, () => {
   }
 });
 
-watch(userId, () => {
-  if (userIdError.value) {
-    validateUserId();
+watch(categoryId, () => {
+  if (categoryError.value) {
+    validateCategory();
   }
 });
 
 const validateForm = () => {
   validateTitle();
   validateBody();
-  validateUserId();
+  validateCategory();
 
-  return !titleError.value && !bodyError.value && !userIdError.value;
+  return !titleError.value && !bodyError.value && !categoryError.value;
 };
 
 const getPostData = () => {
   return {
     title: title.value.trim(),
     body: body.value.trim(),
-    userId: Number(userId.value),
+    status: status.value,
+    category_id: Number(categoryId.value),
   };
+};
+
+const resetForm = () => {
+  title.value = "";
+  body.value = "";
+  categoryId.value = "";
+  status.value = "draft";
+
+  titleError.value = "";
+  bodyError.value = "";
+  categoryError.value = "";
 };
 
 const handleSubmit = async () => {
@@ -94,13 +109,7 @@ const handleSubmit = async () => {
   const success = await postsStore.submitPost(getPostData());
 
   if (success) {
-    title.value = "";
-    body.value = "";
-    userId.value = "";
-
-    titleError.value = "";
-    bodyError.value = "";
-    userIdError.value = "";
+    resetForm();
   }
 };
 
@@ -114,26 +123,14 @@ const retrySubmit = async () => {
   const success = await postsStore.submitPost(getPostData());
 
   if (success) {
-    title.value = "";
-    body.value = "";
-    userId.value = "";
-
-    titleError.value = "";
-    bodyError.value = "";
-    userIdError.value = "";
+    resetForm();
   }
 };
 
 const createAnotherPost = () => {
   postsStore.clearCreatedPost();
 
-  title.value = "";
-  body.value = "";
-  userId.value = "";
-
-  titleError.value = "";
-  bodyError.value = "";
-  userIdError.value = "";
+  resetForm();
 };
 </script>
 
@@ -152,7 +149,7 @@ const createAnotherPost = () => {
         <RouterLink class="create-post-back-link" to="/posts">
           <img :src="backArrow" class="back-arrow-icon" alt="" />
 
-          <span>Back to Posts</span>
+          <span> Back to Posts </span>
         </RouterLink>
       </div>
 
@@ -207,23 +204,61 @@ const createAnotherPost = () => {
         </div>
 
         <div class="form-group">
-          <label for="user-id"> User ID </label>
+          <label for="post-category"> Category </label>
 
-          <input
-            id="user-id"
-            v-model="userId"
+          <p v-if="categoriesLoading" class="form-status">
+            Loading categories...
+          </p>
+
+          <div v-else-if="categoriesError" class="form-status error">
+            <p>
+              {{ categoriesError }}
+            </p>
+
+            <button class="button" type="button" @click="loadCategories">
+              Retry
+            </button>
+          </div>
+
+          <select
+            v-else
+            id="post-category"
+            v-model="categoryId"
             class="form-control"
             :class="{
-              'is-invalid': userIdError,
+              'is-invalid': categoryError,
             }"
-            type="number"
-            placeholder="Enter user ID"
             :disabled="postsStore.submitting"
-          />
+          >
+            <option value="">Select a category</option>
 
-          <p v-if="userIdError" class="error-message">
-            {{ userIdError }}
+            <option
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id"
+            >
+              {{ category.name }}
+            </option>
+          </select>
+
+          <p v-if="categoryError" class="error-message">
+            {{ categoryError }}
           </p>
+        </div>
+
+        <div class="form-group">
+          <label for="post-status"> Status </label>
+
+          <select
+            id="post-status"
+            v-model="status"
+            class="form-control"
+            :disabled="postsStore.submitting"
+          >
+            <option value="draft">Draft</option>
+
+            <option value="published">Published</option>
+          </select>
         </div>
 
         <div v-if="postsStore.submitError" class="form-status error">
