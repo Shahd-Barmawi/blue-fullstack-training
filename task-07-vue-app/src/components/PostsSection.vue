@@ -1,10 +1,43 @@
 <script setup>
+import { useRouter } from "vue-router";
+
 import { usePosts } from "../composables/usePosts";
 import { useAuthState } from "../composables/useAuthState";
 
+const router = useRouter();
+
 const { postsStore, searchTerm, filteredPosts, resetSearch } = usePosts();
 
-const { isAuthenticated } = useAuthState();
+const { isAuthenticated, user } = useAuthState();
+
+const isOwner = (post) => {
+  return (
+    isAuthenticated.value && user.value && post.author?.id === user.value.id
+  );
+};
+
+const editPost = (postId) => {
+  router.push({
+    path: `/posts/${postId}`,
+    query: {
+      edit: "1",
+    },
+  });
+};
+
+const deletePost = async (postId) => {
+  postsStore.clearDeleteState();
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this post?",
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  await postsStore.deletePost(postId);
+};
 </script>
 
 <template>
@@ -20,6 +53,8 @@ const { isAuthenticated } = useAuthState();
 
       <div v-if="isAuthenticated" class="posts-actions">
         <RouterLink class="button" to="/posts/create"> + New Post </RouterLink>
+
+        <RouterLink class="button" to="/my-posts"> My Posts </RouterLink>
       </div>
 
       <div class="posts-search">
@@ -35,10 +70,8 @@ const { isAuthenticated } = useAuthState();
 
       <p class="posts-result-count">{{ filteredPosts.length }} posts</p>
 
-      <!-- Loading State -->
       <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
 
-      <!-- Error State -->
       <div v-else-if="postsStore.error" class="posts-state">
         <p>
           {{ postsStore.error }}
@@ -49,17 +82,18 @@ const { isAuthenticated } = useAuthState();
         </button>
       </div>
 
-      <!-- Empty State -->
       <div v-else-if="postsStore.posts.length === 0" class="posts-state">
         No posts are available.
       </div>
 
-      <!-- Search Empty State -->
       <div v-else-if="filteredPosts.length === 0" class="posts-state">
         No matching results.
       </div>
 
-      <!-- Posts -->
+      <div v-if="postsStore.deleteError" class="form-status error">
+        {{ postsStore.deleteError }}
+      </div>
+
       <div v-else class="posts-grid">
         <article v-for="post in filteredPosts" :key="post.id" class="post-card">
           <span> Post #{{ post.id }} </span>
@@ -100,6 +134,25 @@ const { isAuthenticated } = useAuthState();
               @click="postsStore.toggleFavorite(post.id)"
             >
               {{ postsStore.isFavorite(post.id) ? "Unfavorite" : "Favorite" }}
+            </button>
+
+            <button
+              v-if="isOwner(post)"
+              class="button"
+              type="button"
+              @click="editPost(post.id)"
+            >
+              Edit
+            </button>
+
+            <button
+              v-if="isOwner(post)"
+              class="button"
+              type="button"
+              :disabled="postsStore.deleting"
+              @click="deletePost(post.id)"
+            >
+              {{ postsStore.deleting ? "Deleting..." : "Delete" }}
             </button>
 
             <RouterLink class="button" :to="`/posts/${post.id}`">

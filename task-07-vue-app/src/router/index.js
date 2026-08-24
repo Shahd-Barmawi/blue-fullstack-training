@@ -4,17 +4,12 @@ import HomeView from "../views/HomeView.vue";
 import ServicesView from "../views/ServicesView.vue";
 
 const PostsView = () => import("../views/PostsView.vue");
-
+const MyPostsView = () => import("../views/MyPostsView.vue");
 const FavoritesView = () => import("../views/FavoritesView.vue");
-
 const CreatePostView = () => import("../views/CreatePostView.vue");
-
 const PostDetailsView = () => import("../views/PostDetailsView.vue");
-
 const ContactView = () => import("../views/ContactView.vue");
-
 const LoginView = () => import("../views/LoginView.vue");
-
 const NotFoundView = () => import("../views/NotFoundView.vue");
 
 const routes = [
@@ -31,6 +26,21 @@ const routes = [
   },
 
   {
+    path: "/posts",
+    name: "posts",
+    component: PostsView,
+  },
+
+  {
+    path: "/my-posts",
+    name: "my-posts",
+    component: MyPostsView,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  {
     path: "/posts/create",
     name: "create-post",
     component: CreatePostView,
@@ -43,12 +53,6 @@ const routes = [
     path: "/posts/:id",
     name: "post-details",
     component: PostDetailsView,
-  },
-
-  {
-    path: "/posts",
-    name: "posts",
-    component: PostsView,
   },
 
   {

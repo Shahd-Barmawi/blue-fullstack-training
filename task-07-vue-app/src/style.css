@@ -23,7 +23,7 @@
   --shadow-small: 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-medium: 0 12px 30px rgba(15, 23, 42, 0.12);
 
-  --container-width: 1200px;
+  --container-width: 1320px;
 
   --transition: 0.3s ease;
 }
@@ -295,11 +295,11 @@ label {
 /* End Header and Navigation section*/
 
 /* Hero Section */
+
 .hero {
   min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
-  overflow: hidden;
   background:
     radial-gradient(
       circle at top right,
@@ -310,41 +310,54 @@ label {
 }
 
 .hero-container {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  width: min(100% - 48px, 1400px);
+  margin-inline: auto;
+  display: flex;
   align-items: center;
-  gap: 72px;
+  justify-content: flex-start;
 }
 
 .hero-content {
-  max-width: 650px;
+  width: 100%;
+  max-width: 900px;
 }
 
 .hero-eyebrow {
-  display: inline-block;
-  margin-bottom: 16px;
+  display: block;
+  margin-bottom: 20px;
   color: var(--primary-dark);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
   text-transform: uppercase;
 }
 
 .hero-title {
-  margin-bottom: 24px;
-  font-size: 30px;
+  margin-bottom: 28px;
   color: var(--text-color);
+  font-size: 3.5rem;
+  line-height: 1.1;
+  font-weight: 800;
 }
 
 .hero-description {
-  max-width: 600px;
-  margin-bottom: 32px;
-  font-size: 1.1rem;
+  max-width: 850px;
+  margin-bottom: 38px;
+  font-size: 1.35rem;
+  line-height: 1.8;
 }
 
 .hero-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
+}
+
+.hero-actions .button {
+  min-height: 58px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
 }
 
 .button-secondary {
@@ -657,9 +670,15 @@ label {
   padding: 6rem 0;
 }
 
+.posts .container {
+  width: min(100% - 40px, 1320px);
+}
+
 .posts-actions {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 16px;
   margin: 1.5rem 0;
 }
 
@@ -698,6 +717,7 @@ label {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
   padding: 1.5rem;
   border-radius: 12px;
   background: #fff;
@@ -723,11 +743,23 @@ label {
 }
 
 .post-actions .button {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 50px;
-  padding: 12px 16px;
+  padding: 12px 14px;
   text-align: center;
   white-space: nowrap;
+}
+
+.posts-grid .post-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.posts-grid .post-actions .button {
+  width: 100%;
+  min-width: 0;
 }
 
 .post-actions .button.favorite-button {
@@ -859,6 +891,17 @@ label {
 }
 
 /* Responsive Design */
+
+/* Large tablet / small desktop */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .posts .container {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .posts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
 /* Medium desktop / tablet landscape */
 @media (max-width: 1100px) {
@@ -1033,12 +1076,20 @@ label {
   }
 
   .hero-container {
-    grid-template-columns: 1fr;
-    gap: 40px;
+    width: min(100% - 40px, 1000px);
   }
 
   .hero-content {
-    max-width: 750px;
+    max-width: 800px;
+  }
+
+  .hero-eyebrow {
+    font-size: 1.15rem;
+  }
+
+  .hero-description {
+    max-width: 760px;
+    font-size: 1.2rem;
   }
 
   .about-container,
@@ -1055,7 +1106,7 @@ label {
   }
 
   .hero-title {
-    font-size: 1.8rem;
+    font-size: 2.8rem;
   }
 }
 
@@ -1086,11 +1137,24 @@ label {
 
   .hero {
     min-height: auto;
-    padding: 60px 0;
+    padding: 70px 0;
+  }
+
+  .hero-container {
+    width: min(100% - 32px, 720px);
+  }
+
+  .hero-eyebrow {
+    font-size: 1rem;
   }
 
   .hero-title {
-    font-size: 1.4rem;
+    font-size: 2.25rem;
+  }
+
+  .hero-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
   }
 
   .hero-actions {
@@ -1183,6 +1247,8 @@ label {
 
   .posts-actions {
     width: 100%;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .posts-actions .button {
@@ -1260,19 +1326,26 @@ label {
   }
 
   .hero {
-    padding: 48px 0;
+    padding: 52px 0;
+  }
+
+  .hero-container {
+    width: min(100% - 24px, 100%);
   }
 
   .hero-eyebrow {
-    font-size: 0.85rem;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
     letter-spacing: 0.05em;
   }
 
   .hero-title {
-    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
   }
 
   .hero-description {
+    margin-bottom: 28px;
     font-size: 1rem;
   }
 
@@ -1280,10 +1353,13 @@ label {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
 
   .hero-actions .button {
     width: 100%;
+    min-height: 52px;
+    font-size: 1rem;
   }
 
   .section-title {
