@@ -26,7 +26,19 @@ const editCategoryId = ref("");
 const currentPost = computed(() => {
   const postId = Number(route.params.id);
 
-  return postsStore.posts.find((post) => post.id === postId);
+  const postFromCurrentPage = postsStore.posts.find(
+    (post) => post.id === postId,
+  );
+
+  if (postFromCurrentPage) {
+    return postFromCurrentPage;
+  }
+
+  if (postsStore.selectedPost?.id === postId) {
+    return postsStore.selectedPost;
+  }
+
+  return null;
 });
 
 /*

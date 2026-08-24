@@ -7,6 +7,7 @@ const POSTS_API_URL = `${API_BASE_URL}/posts`;
 export const usePostsStore = defineStore("posts", {
   state: () => ({
     posts: [],
+    selectedPost: null,
 
     loading: false,
     error: "",
@@ -86,12 +87,6 @@ export const usePostsStore = defineStore("posts", {
 
         params.set("page", String(page));
 
-        /*
-         * Task 13 backend search parameter.
-         *
-         * If your Laravel backend used another
-         * parameter name, change "search" here.
-         */
         if (search) {
           params.set("search", search);
         }
@@ -110,15 +105,6 @@ export const usePostsStore = defineStore("posts", {
 
         const result = await response.json();
 
-        /*
-         * Laravel paginated resource response:
-         *
-         * {
-         *   data: [...],
-         *   links: {...},
-         *   meta: {...}
-         * }
-         */
         this.posts = Array.isArray(result) ? result : result.data || [];
 
         if (result.meta) {
@@ -208,6 +194,7 @@ export const usePostsStore = defineStore("posts", {
     async loadPost(postId) {
       this.loading = true;
       this.error = "";
+      this.selectedPost = null;
 
       try {
         const response = await fetch(`${POSTS_API_URL}/${postId}`, {
@@ -230,14 +217,22 @@ export const usePostsStore = defineStore("posts", {
 
         const post = data.data || data;
 
+        /*
+         * Keep the single-post state separate
+         * from the paginated list.
+         */
+        this.selectedPost = post;
+
+        /*
+         * If this post already exists on the
+         * current page, update that copy too.
+         */
         const existingIndex = this.posts.findIndex(
           (item) => item.id === post.id,
         );
 
         if (existingIndex !== -1) {
           this.posts[existingIndex] = post;
-        } else {
-          this.posts.push(post);
         }
 
         return post;
@@ -250,6 +245,10 @@ export const usePostsStore = defineStore("posts", {
       } finally {
         this.loading = false;
       }
+    },
+
+    clearSelectedPost() {
+      this.selectedPost = null;
     },
 
     // =========================
@@ -344,10 +343,11 @@ export const usePostsStore = defineStore("posts", {
         const newPost = data.data || data;
 
         this.createdPost = newPost;
+        this.selectedPost = newPost;
 
         /*
          * Reload page 1 from Laravel because
-         * pagination is now server-driven.
+         * pagination is server-driven.
          */
         await this.loadPosts({
           page: 1,
@@ -442,6 +442,17 @@ export const usePostsStore = defineStore("posts", {
 
         this.updatedPost = updated;
 
+        /*
+         * Keep single-post state synchronized.
+         */
+        if (this.selectedPost?.id === updated.id) {
+          this.selectedPost = updated;
+        }
+
+        /*
+         * Keep current paginated page
+         * synchronized if the post is visible.
+         */
         const index = this.posts.findIndex((post) => post.id === updated.id);
 
         if (index !== -1) {
@@ -517,6 +528,16 @@ export const usePostsStore = defineStore("posts", {
 
         const id = Number(postId);
 
+        /*
+         * Remove stale single-post state.
+         */
+        if (this.selectedPost?.id === id) {
+          this.selectedPost = null;
+        }
+
+        /*
+         * Remove deleted post from favorites.
+         */
         this.favoriteIds = this.favoriteIds.filter(
           (favoriteId) => favoriteId !== id,
         );
