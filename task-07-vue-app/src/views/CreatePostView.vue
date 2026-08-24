@@ -56,17 +56,35 @@ watch(title, () => {
   if (titleError.value) {
     validateTitle();
   }
+
+  if (postsStore.validationErrors.title) {
+    postsStore.validationErrors.title = [];
+  }
 });
 
 watch(body, () => {
   if (bodyError.value) {
     validateBody();
   }
+
+  if (postsStore.validationErrors.body) {
+    postsStore.validationErrors.body = [];
+  }
 });
 
 watch(categoryId, () => {
   if (categoryError.value) {
     validateCategory();
+  }
+
+  if (postsStore.validationErrors.category_id) {
+    postsStore.validationErrors.category_id = [];
+  }
+});
+
+watch(status, () => {
+  if (postsStore.validationErrors.status) {
+    postsStore.validationErrors.status = [];
   }
 });
 
@@ -96,10 +114,13 @@ const resetForm = () => {
   titleError.value = "";
   bodyError.value = "";
   categoryError.value = "";
+
+  postsStore.validationErrors = {};
 };
 
 const handleSubmit = async () => {
   postsStore.submitError = "";
+  postsStore.validationErrors = {};
   postsStore.createdPost = null;
 
   if (!validateForm()) {
@@ -115,6 +136,7 @@ const handleSubmit = async () => {
 
 const retrySubmit = async () => {
   postsStore.submitError = "";
+  postsStore.validationErrors = {};
 
   if (!validateForm()) {
     return;
@@ -149,11 +171,12 @@ const createAnotherPost = () => {
         <RouterLink class="create-post-back-link" to="/posts">
           <img :src="backArrow" class="back-arrow-icon" alt="" />
 
-          <span> Back to Posts </span>
+          <span>Back to Posts</span>
         </RouterLink>
       </div>
 
       <form class="create-post-form" @submit.prevent="handleSubmit">
+        <!-- Title -->
         <div class="form-group">
           <label for="post-title"> Title </label>
 
@@ -162,7 +185,8 @@ const createAnotherPost = () => {
             v-model="title"
             class="form-control"
             :class="{
-              'is-invalid': titleError,
+              'is-invalid':
+                titleError || postsStore.validationErrors.title?.length,
             }"
             type="text"
             placeholder="Enter post title"
@@ -172,8 +196,16 @@ const createAnotherPost = () => {
           <p v-if="titleError" class="error-message">
             {{ titleError }}
           </p>
+
+          <p
+            v-else-if="postsStore.validationErrors.title?.length"
+            class="error-message"
+          >
+            {{ postsStore.validationErrors.title[0] }}
+          </p>
         </div>
 
+        <!-- Body -->
         <div class="form-group">
           <label for="post-body"> Body </label>
 
@@ -182,7 +214,8 @@ const createAnotherPost = () => {
             v-model="body"
             class="form-control"
             :class="{
-              'is-invalid': bodyError,
+              'is-invalid':
+                bodyError || postsStore.validationErrors.body?.length,
             }"
             rows="6"
             maxlength="500"
@@ -195,6 +228,13 @@ const createAnotherPost = () => {
               {{ bodyError }}
             </p>
 
+            <p
+              v-else-if="postsStore.validationErrors.body?.length"
+              class="error-message"
+            >
+              {{ postsStore.validationErrors.body[0] }}
+            </p>
+
             <span v-else></span>
 
             <span class="character-count">
@@ -203,6 +243,7 @@ const createAnotherPost = () => {
           </div>
         </div>
 
+        <!-- Category -->
         <div class="form-group">
           <label for="post-category"> Category </label>
 
@@ -226,7 +267,9 @@ const createAnotherPost = () => {
             v-model="categoryId"
             class="form-control"
             :class="{
-              'is-invalid': categoryError,
+              'is-invalid':
+                categoryError ||
+                postsStore.validationErrors.category_id?.length,
             }"
             :disabled="postsStore.submitting"
           >
@@ -244,8 +287,16 @@ const createAnotherPost = () => {
           <p v-if="categoryError" class="error-message">
             {{ categoryError }}
           </p>
+
+          <p
+            v-else-if="postsStore.validationErrors.category_id?.length"
+            class="error-message"
+          >
+            {{ postsStore.validationErrors.category_id[0] }}
+          </p>
         </div>
 
+        <!-- Status -->
         <div class="form-group">
           <label for="post-status"> Status </label>
 
@@ -253,14 +304,25 @@ const createAnotherPost = () => {
             id="post-status"
             v-model="status"
             class="form-control"
+            :class="{
+              'is-invalid': postsStore.validationErrors.status?.length,
+            }"
             :disabled="postsStore.submitting"
           >
             <option value="draft">Draft</option>
 
             <option value="published">Published</option>
           </select>
+
+          <p
+            v-if="postsStore.validationErrors.status?.length"
+            class="error-message"
+          >
+            {{ postsStore.validationErrors.status[0] }}
+          </p>
         </div>
 
+        <!-- General backend error -->
         <div v-if="postsStore.submitError" class="form-status error">
           <p>
             {{ postsStore.submitError }}
@@ -276,6 +338,7 @@ const createAnotherPost = () => {
           </button>
         </div>
 
+        <!-- Success -->
         <div v-if="postsStore.createdPost" class="form-status success">
           <p>Post created successfully!</p>
 
@@ -289,6 +352,7 @@ const createAnotherPost = () => {
           </button>
         </div>
 
+        <!-- Submit -->
         <button
           v-if="!postsStore.createdPost && !postsStore.submitError"
           class="button create-post-button"

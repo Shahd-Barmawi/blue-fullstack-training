@@ -17,11 +17,9 @@ export const usePostsStore = defineStore("posts", {
 
     submitting: false,
     submitError: "",
+    validationErrors: {},
 
     createdPost: null,
-    createdPosts: [],
-
-    nextPostId: 13,
   }),
 
   getters: {
@@ -50,25 +48,8 @@ export const usePostsStore = defineStore("posts", {
 
         const result = await response.json();
 
-        /*
-         * Laravel paginated response:
-         *
-         * {
-         *   data: [...],
-         *   links: {...},
-         *   meta: {...}
-         * }
-         */
-
         const apiPosts = Array.isArray(result) ? result : result.data || [];
 
-        /*
-         * Posts shown in the interface now come
-         * directly from Laravel.
-         *
-         * We no longer merge old locally-created
-         * posts from localStorage into API data.
-         */
         this.posts = apiPosts;
       } catch (error) {
         this.error =
@@ -110,47 +91,72 @@ export const usePostsStore = defineStore("posts", {
       }
     },
 
-    /*
-     * We keep these temporarily because the
-     * existing Create Post view may still use them.
-     *
-     * In Part 9 we will replace this local behavior
-     * with the real Laravel POST /api/posts request.
-     */
-    restoreCreatedPosts() {
-      const savedPosts = localStorage.getItem("createdPosts");
-
-      const savedNextPostId = localStorage.getItem("nextPostId");
-
-      if (savedPosts) {
-        this.createdPosts = JSON.parse(savedPosts);
-      }
-
-      if (savedNextPostId) {
-        this.nextPostId = Number(savedNextPostId);
-      }
-    },
-
     async submitPost(postData) {
       this.submitting = true;
       this.submitError = "";
+      this.validationErrors = {};
       this.createdPost = null;
 
       try {
-        const newPost = {
-          ...postData,
-          id: this.nextPostId,
-        };
+        const token = localStorage.getItem("authToken");
 
-        this.nextPostId++;
+        if (!token) {
+          this.submitError = "You must be logged in to create a post.";
+
+          return false;
+        }
+
+        const response = await fetch(POSTS_API_URL, {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+
+            Accept: "application/json",
+
+            Authorization: `Bearer ${token}`,
+          },
+
+          body: JSON.stringify(postData),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+          this.submitError =
+            "Your session is no longer valid. Please log in again.";
+
+          return false;
+        }
+
+        if (response.status === 403) {
+          this.submitError = "You are not authorized to create this post.";
+
+          return false;
+        }
+
+        if (response.status === 422) {
+          this.submitError =
+            data.message || "Please correct the validation errors.";
+
+          this.validationErrors = data.errors || {};
+
+          return false;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const newPost = data.data || data;
 
         this.createdPost = newPost;
 
-        this.createdPosts.push(newPost);
-
-        localStorage.setItem("createdPosts", JSON.stringify(this.createdPosts));
-
-        localStorage.setItem("nextPostId", String(this.nextPostId));
+        /*
+         * Keep Pinia state synchronized
+         * without requiring a browser refresh.
+         */
+        this.posts.unshift(newPost);
 
         return true;
       } catch (error) {
@@ -167,6 +173,7 @@ export const usePostsStore = defineStore("posts", {
     clearCreatedPost() {
       this.createdPost = null;
       this.submitError = "";
+      this.validationErrors = {};
     },
   },
 });
