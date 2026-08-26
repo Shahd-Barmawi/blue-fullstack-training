@@ -141,12 +141,19 @@ const confirmDelete = async () => {
 
   postsStore.clearDeleteState();
 
-  const success = await postsStore.deletePost(currentPost.value.id);
+  const postId = currentPost.value.id;
+
+  const success = await postsStore.deletePost(postId);
 
   if (success) {
     showDeleteModal.value = false;
 
-    await router.push("/posts");
+    await router.push({
+      name: "posts",
+      query: {
+        deleted: "1",
+      },
+    });
   }
 };
 
@@ -294,6 +301,7 @@ onMounted(async () => {
               v-if="isOwner"
               class="button"
               type="button"
+              :disabled="postsStore.deleting"
               @click="openDeleteModal"
             >
               Delete Post
@@ -309,6 +317,7 @@ onMounted(async () => {
         <template v-else>
           <h2>Edit Post #{{ currentPost.id }}</h2>
 
+          <!-- Title -->
           <div class="form-group">
             <label for="edit-title"> Title </label>
 
@@ -331,6 +340,7 @@ onMounted(async () => {
             </p>
           </div>
 
+          <!-- Body -->
           <div class="form-group">
             <label for="edit-body"> Body </label>
 
@@ -354,6 +364,7 @@ onMounted(async () => {
             </p>
           </div>
 
+          <!-- Category -->
           <div class="form-group">
             <label for="edit-category"> Category </label>
 
@@ -399,6 +410,7 @@ onMounted(async () => {
             </p>
           </div>
 
+          <!-- Status -->
           <div class="form-group">
             <label for="edit-status"> Status </label>
 
@@ -421,6 +433,7 @@ onMounted(async () => {
             </p>
           </div>
 
+          <!-- Update Error -->
           <div v-if="postsStore.updateError" class="form-status error">
             {{ postsStore.updateError }}
           </div>
@@ -447,6 +460,7 @@ onMounted(async () => {
         </template>
       </article>
 
+      <!-- Not Found -->
       <div v-else>
         <p>Post not found.</p>
 

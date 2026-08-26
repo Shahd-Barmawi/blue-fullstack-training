@@ -17,6 +17,10 @@ export const useLogin = () => {
   const error = ref("");
 
   const login = async () => {
+    if (loading.value) {
+      return false;
+    }
+
     loading.value = true;
     error.value = "";
 
@@ -26,8 +30,15 @@ export const useLogin = () => {
         password: password.value,
       });
 
+      if (response.status === 401) {
+        error.value =
+          "Invalid email or password. Please check your credentials.";
+
+        return false;
+      }
+
       if (!response.ok) {
-        error.value = data?.message || "Invalid email or password.";
+        error.value = data?.message || "Unable to sign in. Please try again.";
 
         return false;
       }
@@ -56,10 +67,8 @@ export const useLogin = () => {
   return {
     email,
     password,
-
     loading,
     error,
-
     login,
   };
 };

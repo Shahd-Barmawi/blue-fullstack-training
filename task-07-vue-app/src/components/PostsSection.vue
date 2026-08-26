@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { usePosts } from "../composables/usePosts";
 import { useAuthState } from "../composables/useAuthState";
 import DeleteConfirmModal from "./DeleteConfirmModal.vue";
 
+const route = useRoute();
 const router = useRouter();
 
 const {
@@ -25,6 +26,22 @@ const { isAuthenticated, user } = useAuthState();
 
 const showDeleteModal = ref(false);
 const postToDelete = ref(null);
+
+const deleteSuccessMessage = ref("");
+
+let deleteSuccessTimer = null;
+
+const showDeleteSuccess = () => {
+  deleteSuccessMessage.value = "Post deleted successfully!";
+
+  if (deleteSuccessTimer) {
+    clearTimeout(deleteSuccessTimer);
+  }
+
+  deleteSuccessTimer = setTimeout(() => {
+    deleteSuccessMessage.value = "";
+  }, 4000);
+};
 
 const isOwner = (post) => {
   return (
@@ -48,6 +65,7 @@ const openDeleteModal = (post) => {
   postsStore.clearDeleteState();
 
   postToDelete.value = post;
+
   showDeleteModal.value = true;
 };
 
@@ -57,6 +75,7 @@ const closeDeleteModal = () => {
   }
 
   showDeleteModal.value = false;
+
   postToDelete.value = null;
 };
 
@@ -70,9 +89,29 @@ const confirmDelete = async () => {
   const success = await postsStore.deletePost(postToDelete.value.id);
 
   if (success) {
-    closeDeleteModal();
+    showDeleteModal.value = false;
+
+    postToDelete.value = null;
+
+    showDeleteSuccess();
   }
 };
+
+onMounted(async () => {
+  if (route.query.deleted === "1") {
+    showDeleteSuccess();
+
+    const newQuery = {
+      ...route.query,
+    };
+
+    delete newQuery.deleted;
+
+    await router.replace({
+      query: newQuery,
+    });
+  }
+});
 </script>
 
 <template>
@@ -105,11 +144,20 @@ const confirmDelete = async () => {
         <button type="button" @click="resetSearch">Reset</button>
       </div>
 
-      <!-- Backend result information -->
       <p class="posts-result-count">
         {{ postsStore.totalPosts }}
         total posts
       </p>
+
+      <!-- Delete Success -->
+      <div v-if="deleteSuccessMessage" class="form-status success">
+        {{ deleteSuccessMessage }}
+      </div>
+
+      <!-- Delete Error -->
+      <div v-if="postsStore.deleteError" class="form-status error">
+        {{ postsStore.deleteError }}
+      </div>
 
       <!-- Loading -->
       <div v-if="postsStore.loading" class="posts-state">Loading posts...</div>
@@ -125,16 +173,11 @@ const confirmDelete = async () => {
         </button>
       </div>
 
-      <!-- Empty backend result -->
+      <!-- Empty -->
       <div v-else-if="filteredPosts.length === 0" class="posts-state">
         {{
           searchTerm.trim() ? "No matching results." : "No posts are available."
         }}
-      </div>
-
-      <!-- Delete Error -->
-      <div v-if="postsStore.deleteError" class="form-status error">
-        {{ postsStore.deleteError }}
       </div>
 
       <!-- Posts -->
@@ -198,6 +241,7 @@ const confirmDelete = async () => {
               v-if="isOwner(post)"
               class="button"
               type="button"
+              :disabled="postsStore.deleting"
               @click="openDeleteModal(post)"
             >
               Delete
@@ -210,7 +254,7 @@ const confirmDelete = async () => {
         </article>
       </div>
 
-      <!-- Backend Pagination -->
+      <!-- Pagination -->
       <div
         v-if="
           !postsStore.loading && !postsStore.error && postsStore.lastPage > 1

@@ -44,6 +44,7 @@ export const usePostsStore = defineStore("posts", {
     // Delete
     deleting: false,
     deleteError: "",
+    deleteSuccess: "",
   }),
 
   getters: {
@@ -447,6 +448,7 @@ export const usePostsStore = defineStore("posts", {
     async deletePost(postId) {
       this.deleting = true;
       this.deleteError = "";
+      this.deleteSuccess = "";
 
       try {
         const token = localStorage.getItem("authToken");
@@ -525,6 +527,8 @@ export const usePostsStore = defineStore("posts", {
           });
         }
 
+        this.deleteSuccess = "Post deleted successfully!";
+
         return true;
       } catch (error) {
         this.deleteError = "Unable to delete the post. Please try again.";
@@ -539,6 +543,7 @@ export const usePostsStore = defineStore("posts", {
 
     clearDeleteState() {
       this.deleteError = "";
+      this.deleteSuccess = "";
     },
   },
 });

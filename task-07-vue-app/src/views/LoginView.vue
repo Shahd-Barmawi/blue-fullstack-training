@@ -26,6 +26,7 @@ const { email, password, loading, error, login } = useLogin();
             placeholder="Enter your email"
             autocomplete="email"
             required
+            :disabled="loading"
           />
         </div>
 
@@ -39,6 +40,7 @@ const { email, password, loading, error, login } = useLogin();
             placeholder="Enter your password"
             autocomplete="current-password"
             required
+            :disabled="loading"
           />
         </div>
 
