@@ -3,13 +3,22 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import ServicesView from "../views/ServicesView.vue";
 
+import { useAuthState } from "../composables/useAuthState";
+
 const PostsView = () => import("../views/PostsView.vue");
+
 const MyPostsView = () => import("../views/MyPostsView.vue");
+
 const FavoritesView = () => import("../views/FavoritesView.vue");
+
 const CreatePostView = () => import("../views/CreatePostView.vue");
+
 const PostDetailsView = () => import("../views/PostDetailsView.vue");
+
 const ContactView = () => import("../views/ContactView.vue");
+
 const LoginView = () => import("../views/LoginView.vue");
+
 const NotFoundView = () => import("../views/NotFoundView.vue");
 
 const routes = [
@@ -35,6 +44,7 @@ const routes = [
     path: "/my-posts",
     name: "my-posts",
     component: MyPostsView,
+
     meta: {
       requiresAuth: true,
     },
@@ -44,6 +54,7 @@ const routes = [
     path: "/posts/create",
     name: "create-post",
     component: CreatePostView,
+
     meta: {
       requiresAuth: true,
     },
@@ -59,6 +70,7 @@ const routes = [
     path: "/favorites",
     name: "favorites",
     component: FavoritesView,
+
     meta: {
       requiresAuth: true,
     },
@@ -109,14 +121,59 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to) => {
-  const token = localStorage.getItem("authToken");
+router.beforeEach(async (to) => {
+  const { token, isAuthenticated, fetchAuthenticatedUser, clearAuth } =
+    useAuthState();
 
-  if (to.meta.requiresAuth && !token) {
+  /*
+   * Edit mode is also protected.
+   *
+   * /posts/:id itself remains public,
+   * but /posts/:id?edit=1 requires
+   * authentication.
+   */
+  const requiresAuthentication =
+    to.meta.requiresAuth ||
+    (to.name === "post-details" && to.query.edit === "1");
+
+  if (!requiresAuthentication) {
+    return true;
+  }
+
+  /*
+   * No token means the visitor is
+   * definitely not authenticated.
+   */
+  if (!token.value) {
+    clearAuth();
+
     return {
       name: "login",
+
+      query: {
+        redirect: to.fullPath,
+      },
     };
   }
+
+  /*
+   * Verify the token with Laravel.
+   * This handles expired/revoked/
+   * otherwise invalid tokens.
+   */
+  const validSession = await fetchAuthenticatedUser();
+
+  if (!validSession || !isAuthenticated.value) {
+    return {
+      name: "login",
+
+      query: {
+        redirect: to.fullPath,
+      },
+    };
+  }
+
+  return true;
 });
 
 export default router;

@@ -6,11 +6,19 @@ const token = ref(localStorage.getItem("authToken") || "");
 
 const savedUser = localStorage.getItem("authUser");
 
-const user = ref(savedUser ? JSON.parse(savedUser) : null);
+let parsedUser = null;
+
+try {
+  parsedUser = savedUser ? JSON.parse(savedUser) : null;
+} catch {
+  localStorage.removeItem("authUser");
+}
+
+const user = ref(parsedUser);
 
 export const useAuthState = () => {
   const isAuthenticated = computed(() => {
-    return Boolean(token.value);
+    return Boolean(token.value && user.value);
   });
 
   const setAuth = (newToken, newUser) => {
@@ -27,11 +35,14 @@ export const useAuthState = () => {
     user.value = null;
 
     localStorage.removeItem("authToken");
+
     localStorage.removeItem("authUser");
   };
 
   const fetchAuthenticatedUser = async () => {
     if (!token.value) {
+      clearAuth();
+
       return false;
     }
 
@@ -54,6 +65,11 @@ export const useAuthState = () => {
     } catch (error) {
       console.error("Unable to load authenticated user:", error);
 
+      /*
+       * Do not automatically remove the
+       * session for a network/server error.
+       * The token may still be valid.
+       */
       return false;
     }
   };
@@ -76,8 +92,10 @@ export const useAuthState = () => {
     token,
     user,
     isAuthenticated,
+
     setAuth,
     clearAuth,
+
     fetchAuthenticatedUser,
     logout,
   };
