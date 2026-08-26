@@ -159,6 +159,7 @@ task-07-vue-app
 **Shahd Barmawi**
 
 ---
+
 # Task 08 – Vue Router, Dynamic Routes, and Reusable API Logic
 
 ## Overview
@@ -193,14 +194,14 @@ The task focused on route-level navigation, dynamic post routes, reusable API lo
 
 ## Routes
 
-| Route | Description |
-| --- | --- |
-| `/` | Home page |
-| `/services` | Services and Projects |
-| `/posts` | Posts list |
-| `/posts/:id` | Dynamic post details |
-| `/contact` | Contact page |
-| `/:pathMatch(.*)*` | 404 Not Found page |
+| Route              | Description           |
+| ------------------ | --------------------- |
+| `/`                | Home page             |
+| `/services`        | Services and Projects |
+| `/posts`           | Posts list            |
+| `/posts/:id`       | Dynamic post details  |
+| `/contact`         | Contact page          |
+| `/:pathMatch(.*)*` | 404 Not Found page    |
 
 ## Reusable Composable
 
@@ -538,13 +539,13 @@ The QA process covered the following areas:
 
 The following issues were discovered during the QA process and were fixed before the final submission:
 
-| Issue | Resolution |
-| --- | --- |
-| Hero buttons did not navigate correctly. | Replaced anchor elements with RouterLink components. |
-| Active navigation did not update while scrolling. | Added reusable active-navigation logic. |
-| About section button did not navigate correctly. | Replaced the anchor link with RouterLink. |
-| Statistics counters did not animate correctly. | Added a reusable statistics counter composable. |
-| Mobile navigation menu did not open. | Added reusable mobile-menu logic. |
+| Issue                                              | Resolution                                                            |
+| -------------------------------------------------- | --------------------------------------------------------------------- |
+| Hero buttons did not navigate correctly.           | Replaced anchor elements with RouterLink components.                  |
+| Active navigation did not update while scrolling.  | Added reusable active-navigation logic.                               |
+| About section button did not navigate correctly.   | Replaced the anchor link with RouterLink.                             |
+| Statistics counters did not animate correctly.     | Added a reusable statistics counter composable.                       |
+| Mobile navigation menu did not open.               | Added reusable mobile-menu logic.                                     |
 | Project details interaction required improvements. | Updated the project interaction flow and verified the final behavior. |
 
 ---
@@ -571,12 +572,12 @@ The following accessibility checks were completed successfully:
 The application was tested using the following screen sizes:
 
 | Screen Width | Result |
-| --- | --- |
-| 320px | Passed |
-| 375px | Passed |
-| 768px | Passed |
-| 1024px | Passed |
-| 1440px | Passed |
+| ------------ | ------ |
+| 320px        | Passed |
+| 375px        | Passed |
+| 768px        | Passed |
+| 1024px       | Passed |
+| 1440px       | Passed |
 
 The following areas were verified:
 
@@ -1169,3 +1170,769 @@ Frontend-created data was also verified through Laravel and MySQL to confirm tha
 - Responsive verification: Passed
 
 Task 15 full-stack integration is complete.
+
+---
+
+# Tasks 16 & 17 – Full-Stack Stabilization, Testing, Security & Handover
+
+## Overview
+
+Tasks 16 and 17 focused on completing and stabilizing the existing Vue and Laravel full-stack integration.
+
+The work included frontend route protection, authorization-aware UI behavior, reusable API handling, improved UX states, automated Laravel and Vue tests, security configuration review, regression testing, and final full-stack documentation.
+
+The existing Task 15 integration was kept and improved rather than rebuilding the application from scratch.
+
+---
+
+## Frontend Route Protection
+
+Protected frontend routes were reviewed and improved.
+
+The following pages require authentication:
+
+- My Posts
+- Create Post
+- Favorites
+- Edit functionality
+
+Unauthenticated visitors attempting to open protected routes are redirected to the Login page.
+
+The intended destination is preserved using a redirect query parameter.
+
+Example:
+
+```text
+/posts/create
+```
+
+redirects an unauthenticated user to:
+
+```text
+/login?redirect=/posts/create
+```
+
+After successful login, the user is returned to the originally requested page.
+
+Invalid or expired authentication tokens are also handled cleanly.
+
+When Laravel rejects the stored token:
+
+- The invalid authentication state is cleared.
+- The stored user is removed.
+- The application returns to the Login state.
+- Protected pages remain inaccessible.
+
+---
+
+## Authorization-Aware UI
+
+The Vue interface now reflects Laravel ownership rules.
+
+Edit and Delete controls are displayed only when the authenticated user owns the post.
+
+For example:
+
+```text
+User B viewing User B post:
+Edit → Visible
+Delete → Visible
+```
+
+```text
+User B viewing User A post:
+Edit → Hidden
+Delete → Hidden
+```
+
+Frontend button visibility is only a UX improvement.
+
+Laravel remains the final authorization layer.
+
+Unauthorized update and delete requests are rejected by Laravel with:
+
+```text
+403 Forbidden
+```
+
+The Vue application handles these responses with clear authorization messages.
+
+---
+
+## Reusable API Layer
+
+Frontend API request logic was refactored to reduce duplicated `fetch()` code.
+
+A reusable API service handles:
+
+- GET requests
+- POST requests
+- PUT requests
+- DELETE requests
+- JSON headers
+- Authentication headers
+- API base URL configuration
+
+The API base URL is read from:
+
+```javascript
+import.meta.env.VITE_API_BASE_URL;
+```
+
+Authenticated requests automatically include:
+
+```text
+Authorization: Bearer <token>
+```
+
+The reusable API layer is used by:
+
+- Authentication
+- Posts
+- Categories
+
+Login logic was also updated to use the shared API service.
+
+---
+
+## User Feedback and UX States
+
+The application was reviewed to ensure clear user feedback for important application states.
+
+Implemented and verified states include:
+
+- Loading
+- Empty results
+- Successful Create
+- Successful Update
+- Successful Delete
+- Backend validation errors
+- Network/server errors
+- 401 Unauthenticated
+- 403 Forbidden
+- 404 Not Found
+
+Examples include:
+
+```text
+Loading posts...
+```
+
+```text
+No matching results.
+```
+
+```text
+Post created successfully!
+```
+
+```text
+Post updated successfully!
+```
+
+```text
+Post deleted successfully!
+```
+
+```text
+Invalid email or password. Please check your credentials.
+```
+
+```text
+Post not found.
+```
+
+Submit and action buttons are disabled while relevant requests are in progress to reduce duplicate submissions.
+
+Examples include:
+
+```text
+Logging in...
+Creating Post...
+Saving...
+Deleting...
+```
+
+A custom delete confirmation modal is also used before deleting a post.
+
+---
+
+## Delete Success Feedback
+
+Delete behavior was improved so the user receives clear confirmation after a successful deletion.
+
+After Laravel successfully deletes a post, the interface displays:
+
+```text
+Post deleted successfully!
+```
+
+When deleting from the Post Details page, the user is returned to the Posts page and the success state is preserved during navigation.
+
+---
+
+## Laravel Feature Tests
+
+Automated Laravel Feature Tests were added for important API behavior.
+
+The test suite covers:
+
+- Successful login
+- Unauthenticated access to a protected endpoint
+- Authenticated post creation
+- Validation failure for invalid post data
+- Forbidden update of another user's post
+- Forbidden deletion of another user's post
+- Successful Posts list response
+
+Laravel tests use:
+
+```php
+use RefreshDatabase;
+```
+
+and Laravel Sanctum test authentication:
+
+```php
+Sanctum::actingAs($user);
+```
+
+The testing database is configured using SQLite in memory:
+
+```xml
+<env name="DB_CONNECTION" value="sqlite"/>
+<env name="DB_DATABASE" value=":memory:"/>
+```
+
+This prevents automated tests from modifying the normal development MySQL database.
+
+Run the Laravel tests with:
+
+```bash
+php artisan test
+```
+
+Final Laravel test result:
+
+```text
+Tests: 9 passed
+```
+
+All Laravel automated tests passed successfully.
+
+---
+
+## Vue Automated Tests
+
+Frontend automated tests were added and updated using:
+
+- Vitest
+- Vue Test Utils
+- jsdom
+
+New test coverage includes:
+
+- Authentication state
+- Clearing authentication state
+- Posts loading state
+- Successful Posts API handling
+- Posts network/error state
+- Create Post validation
+- Successful mocked Create Post submission
+- Existing Pinia favorites behavior
+
+Old Create Post tests were updated to match the current Laravel integration.
+
+The previous test expected a frontend `user_id` field.
+
+This was removed because post ownership is now assigned securely by Laravel using the authenticated user.
+
+Frontend API behavior is mocked in automated tests so the test suite does not depend on the Laravel development server.
+
+Run Vue tests with:
+
+```bash
+npm test -- --run
+```
+
+Final Vue test result:
+
+```text
+Test Files  4 passed
+Tests       10 passed
+```
+
+All Vue automated tests passed successfully.
+
+---
+
+## Security and Configuration Review
+
+The full-stack project was reviewed for security and configuration issues.
+
+### Environment Files
+
+The frontend `.env` file was found to be tracked by Git and was removed from Git tracking.
+
+The file remains available locally but is no longer committed.
+
+The frontend `.gitignore` now includes:
+
+```gitignore
+.env
+.env.local
+.env.*.local
+```
+
+Only environment example files remain tracked.
+
+Examples:
+
+```text
+task-07-vue-app/.env.example
+task-11-laravel-api/.env.example
+```
+
+Real environment files, database credentials, and secrets are not intended to be committed.
+
+---
+
+## Password and Token Security
+
+Laravel's User model hides sensitive fields:
+
+```php
+protected $hidden = [
+    'password',
+    'remember_token',
+];
+```
+
+Passwords are therefore not returned in API responses.
+
+Authentication tokens are generated dynamically and are not hardcoded in the frontend source code.
+
+---
+
+## Protected Backend Routes
+
+Laravel protects write operations using:
+
+```php
+Route::middleware('auth:sanctum')
+```
+
+Protected endpoints include:
+
+```text
+GET /api/me
+POST /api/logout
+
+POST /api/posts
+PUT /api/posts/{id}
+PATCH /api/posts/{id}
+DELETE /api/posts/{id}
+```
+
+Unauthenticated access to protected operations returns:
+
+```text
+401 Unauthorized
+```
+
+---
+
+## Laravel Ownership Rules
+
+Laravel continues to enforce post ownership.
+
+Only the post owner can update or delete the post.
+
+Attempts by another authenticated user return:
+
+```text
+403 Forbidden
+```
+
+Both update and delete ownership behavior were also verified through automated Laravel tests.
+
+---
+
+## Server-Side Validation
+
+Post Create and Update requests remain validated by Laravel.
+
+Validation includes:
+
+```php
+'title' => 'required|string|max:255',
+'body' => 'required|string',
+'status' => 'required|in:draft,published',
+'category_id' => 'required|exists:categories,id',
+```
+
+Invalid data is rejected even if frontend validation is bypassed.
+
+Laravel returns:
+
+```text
+422 Unprocessable Content
+```
+
+for validation failures.
+
+---
+
+## CORS Configuration
+
+Laravel CORS configuration was reviewed.
+
+The required development origin is explicitly allowed:
+
+```php
+'allowed_origins' => [
+    'http://localhost:5173',
+],
+```
+
+The application does not bypass CORS by allowing every origin carelessly.
+
+---
+
+## Frontend Configuration Review
+
+The frontend was checked for hardcoded production-sensitive values.
+
+The Laravel API URL is not hardcoded throughout components.
+
+It is configured using:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+and accessed through:
+
+```javascript
+import.meta.env.VITE_API_BASE_URL;
+```
+
+Authentication headers are generated dynamically:
+
+```javascript
+headers.Authorization = `Bearer ${token}`;
+```
+
+No access token is hardcoded in the frontend source.
+
+---
+
+## Regression Testing
+
+A complete regression pass was performed after the integration and security changes.
+
+The following functionality was verified:
+
+- Login
+- Logout
+- Authenticated user retrieval
+- Posts list
+- Post details
+- Categories
+- Search
+- Backend pagination
+- Create Post
+- Update Post
+- Delete Post
+- Validation handling
+- Network/server failure handling
+- 401 handling
+- 403 handling
+- 404 handling
+- Protected frontend routes
+- Responsive desktop layout
+- Responsive mobile layout
+- Browser refresh on routed pages
+- Laravel automated tests
+- Vue automated tests
+
+Previously completed successful tests were not unnecessarily repeated when they had already been verified during the same regression session.
+
+All regression checks completed successfully.
+
+---
+
+# Full-Stack Local Run Instructions
+
+## Required Software
+
+The following software is required:
+
+- Node.js
+- npm
+- PHP 8.2 or compatible version
+- Composer
+- MySQL
+- Git
+
+The project consists of:
+
+```text
+task-07-vue-app
+```
+
+for the Vue frontend and:
+
+```text
+task-11-laravel-api
+```
+
+for the Laravel backend.
+
+Both applications must run at the same time.
+
+---
+
+## Laravel Backend Setup
+
+Navigate to the backend:
+
+```bash
+cd task-11-laravel-api
+```
+
+Install dependencies:
+
+```bash
+composer install
+```
+
+Create the environment file:
+
+Windows:
+
+```bash
+copy .env.example .env
+```
+
+macOS/Linux:
+
+```bash
+cp .env.example .env
+```
+
+Generate the Laravel application key:
+
+```bash
+php artisan key:generate
+```
+
+Configure the database using environment variables such as:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_username
+DB_PASSWORD=your_database_password
+```
+
+Real credentials must not be committed.
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+Run seeders:
+
+```bash
+php artisan db:seed
+```
+
+Or recreate and seed the database:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Start Laravel:
+
+```bash
+php artisan serve
+```
+
+Backend:
+
+```text
+http://127.0.0.1:8000
+```
+
+API:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+---
+
+## Vue Frontend Setup
+
+Navigate to the frontend:
+
+```bash
+cd task-07-vue-app
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the local frontend `.env` file and configure:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+Start Vue:
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+---
+
+## Running Laravel Tests
+
+From:
+
+```text
+task-11-laravel-api
+```
+
+run:
+
+```bash
+php artisan test
+```
+
+---
+
+## Running Vue Tests
+
+From:
+
+```text
+task-07-vue-app
+```
+
+run:
+
+```bash
+npm test -- --run
+```
+
+The Vue automated tests mock API behavior where appropriate and do not require the Laravel server to be running.
+
+---
+
+## Authentication Flow
+
+The current authentication flow is:
+
+1. The user enters credentials in Vue.
+2. Vue sends a request to:
+
+```text
+POST /api/login
+```
+
+3. Laravel validates the credentials.
+4. Laravel returns the authenticated user and Sanctum token.
+5. Vue stores the authentication state.
+6. Authenticated requests include:
+
+```text
+Authorization: Bearer <token>
+```
+
+7. Vue retrieves the authenticated user using:
+
+```text
+GET /api/me
+```
+
+8. Protected frontend routes require authentication.
+9. Laravel independently protects backend write operations.
+10. Logout invalidates the backend token and clears the frontend authentication state.
+
+---
+
+## Main Full-Stack Flow
+
+```text
+User
+  |
+  v
+Vue Frontend
+  |
+  v
+Reusable API Layer
+  |
+  v
+Laravel REST API
+  |
+  v
+Authentication / Validation / Authorization
+  |
+  v
+Eloquent Models
+  |
+  v
+MySQL Database
+  |
+  v
+Laravel JSON Response
+  |
+  v
+Pinia State
+  |
+  v
+Updated Vue Interface
+```
+
+The frontend provides the user interface and application state.
+
+Laravel remains responsible for:
+
+- Authentication
+- Authorization
+- Server-side validation
+- Database persistence
+- API responses
+
+After successful Create, Update, or Delete operations, the Vue/Pinia state is synchronized without requiring a manual full-page refresh.
+
+---
+
+## Tasks 16 & 17 Status
+
+- Frontend Route Protection: Completed
+- Authorization-Aware UI: Completed
+- Reusable API Layer: Completed
+- User Feedback and UX States: Completed
+- Laravel Feature Tests: Passed
+- Vue Automated Tests: Passed
+- Security and Configuration Review: Completed
+- Regression Testing: Passed
+- README and Full-Stack Run Instructions: Updated
