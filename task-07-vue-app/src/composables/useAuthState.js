@@ -1,17 +1,12 @@
 import { computed, ref } from "vue";
 
-const token = ref(
-  localStorage.getItem("authToken") || "",
-);
+import { apiGet, apiPost } from "../services/api";
+
+const token = ref(localStorage.getItem("authToken") || "");
 
 const savedUser = localStorage.getItem("authUser");
 
-const user = ref(
-  savedUser ? JSON.parse(savedUser) : null,
-);
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL;
+const user = ref(savedUser ? JSON.parse(savedUser) : null);
 
 export const useAuthState = () => {
   const isAuthenticated = computed(() => {
@@ -22,15 +17,9 @@ export const useAuthState = () => {
     token.value = newToken;
     user.value = newUser;
 
-    localStorage.setItem(
-      "authToken",
-      newToken,
-    );
+    localStorage.setItem("authToken", newToken);
 
-    localStorage.setItem(
-      "authUser",
-      JSON.stringify(newUser),
-    );
+    localStorage.setItem("authUser", JSON.stringify(newUser));
   };
 
   const clearAuth = () => {
@@ -47,37 +36,23 @@ export const useAuthState = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/me`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token.value}`,
-          },
-        },
-      );
+      const { response, data } = await apiGet("/me", {
+        auth: true,
+      });
 
       if (!response.ok) {
         clearAuth();
+
         return false;
       }
 
-      const data = await response.json();
-
       user.value = data;
 
-      localStorage.setItem(
-        "authUser",
-        JSON.stringify(data),
-      );
+      localStorage.setItem("authUser", JSON.stringify(data));
 
       return true;
     } catch (error) {
-      console.error(
-        "Unable to load authenticated user:",
-        error,
-      );
+      console.error("Unable to load authenticated user:", error);
 
       return false;
     }
@@ -86,22 +61,12 @@ export const useAuthState = () => {
   const logout = async () => {
     try {
       if (token.value) {
-        await fetch(
-          `${API_BASE_URL}/logout`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${token.value}`,
-            },
-          },
-        );
+        await apiPost("/logout", undefined, {
+          auth: true,
+        });
       }
     } catch (error) {
-      console.error(
-        "Logout request failed:",
-        error,
-      );
+      console.error("Logout request failed:", error);
     } finally {
       clearAuth();
     }

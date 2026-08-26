@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-const POSTS_API_URL = `${API_BASE_URL}/posts`;
+import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
 
 export const usePostsStore = defineStore("posts", {
   state: () => ({
@@ -91,23 +89,19 @@ export const usePostsStore = defineStore("posts", {
           params.set("search", search);
         }
 
-        const requestUrl = `${POSTS_API_URL}?${params.toString()}`;
+        const endpoint = `/posts?${params.toString()}`;
 
-        const response = await fetch(requestUrl, {
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        const { response, data } = await apiGet(endpoint);
 
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const result = await response.json();
+        const result = data;
 
-        this.posts = Array.isArray(result) ? result : result.data || [];
+        this.posts = Array.isArray(result) ? result : result?.data || [];
 
-        if (result.meta) {
+        if (result?.meta) {
           this.currentPage = Number(result.meta.current_page) || 1;
 
           this.lastPage = Number(result.meta.last_page) || 1;
@@ -122,7 +116,7 @@ export const usePostsStore = defineStore("posts", {
           this.totalPosts = this.posts.length;
         }
 
-        if (result.links) {
+        if (result?.links) {
           this.paginationLinks = {
             first: result.links.first || null,
             last: result.links.last || null,
@@ -197,11 +191,7 @@ export const usePostsStore = defineStore("posts", {
       this.selectedPost = null;
 
       try {
-        const response = await fetch(`${POSTS_API_URL}/${postId}`, {
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        const { response, data } = await apiGet(`/posts/${postId}`);
 
         if (response.status === 404) {
           this.error = "Post not found.";
@@ -213,9 +203,7 @@ export const usePostsStore = defineStore("posts", {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const data = await response.json();
-
-        const post = data.data || data;
+        const post = data?.data || data;
 
         /*
          * Keep the single-post state separate
@@ -298,21 +286,9 @@ export const usePostsStore = defineStore("posts", {
           return false;
         }
 
-        const response = await fetch(POSTS_API_URL, {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-
-            Accept: "application/json",
-
-            Authorization: `Bearer ${token}`,
-          },
-
-          body: JSON.stringify(postData),
+        const { response, data } = await apiPost("/posts", postData, {
+          auth: true,
         });
-
-        const data = await response.json();
 
         if (response.status === 401) {
           this.submitError =
@@ -329,9 +305,9 @@ export const usePostsStore = defineStore("posts", {
 
         if (response.status === 422) {
           this.submitError =
-            data.message || "Please correct the validation errors.";
+            data?.message || "Please correct the validation errors.";
 
-          this.validationErrors = data.errors || {};
+          this.validationErrors = data?.errors || {};
 
           return false;
         }
@@ -340,7 +316,7 @@ export const usePostsStore = defineStore("posts", {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const newPost = data.data || data;
+        const newPost = data?.data || data;
 
         this.createdPost = newPost;
         this.selectedPost = newPost;
@@ -390,21 +366,9 @@ export const usePostsStore = defineStore("posts", {
           return false;
         }
 
-        const response = await fetch(`${POSTS_API_URL}/${postId}`, {
-          method: "PUT",
-
-          headers: {
-            "Content-Type": "application/json",
-
-            Accept: "application/json",
-
-            Authorization: `Bearer ${token}`,
-          },
-
-          body: JSON.stringify(postData),
+        const { response, data } = await apiPut(`/posts/${postId}`, postData, {
+          auth: true,
         });
-
-        const data = await response.json();
 
         if (response.status === 401) {
           this.updateError =
@@ -427,9 +391,9 @@ export const usePostsStore = defineStore("posts", {
 
         if (response.status === 422) {
           this.updateError =
-            data.message || "Please correct the validation errors.";
+            data?.message || "Please correct the validation errors.";
 
-          this.updateValidationErrors = data.errors || {};
+          this.updateValidationErrors = data?.errors || {};
 
           return false;
         }
@@ -438,7 +402,7 @@ export const usePostsStore = defineStore("posts", {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const updated = data.data || data;
+        const updated = data?.data || data;
 
         this.updatedPost = updated;
 
@@ -493,14 +457,8 @@ export const usePostsStore = defineStore("posts", {
           return false;
         }
 
-        const response = await fetch(`${POSTS_API_URL}/${postId}`, {
-          method: "DELETE",
-
-          headers: {
-            Accept: "application/json",
-
-            Authorization: `Bearer ${token}`,
-          },
+        const { response } = await apiDelete(`/posts/${postId}`, {
+          auth: true,
         });
 
         if (response.status === 401) {

@@ -5,6 +5,7 @@ import { useRoute, useRouter } from "vue-router";
 import { usePostsStore } from "../stores/posts";
 import { useAuthState } from "../composables/useAuthState";
 import { useCategories } from "../composables/useCategories";
+import DeleteConfirmModal from "../components/DeleteConfirmModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -17,6 +18,8 @@ const { categories, categoriesLoading, categoriesError, loadCategories } =
   useCategories();
 
 const isEditing = ref(false);
+
+const showDeleteModal = ref(false);
 
 const editTitle = ref("");
 const editBody = ref("");
@@ -113,24 +116,36 @@ const saveUpdate = async () => {
   }
 };
 
-const deletePost = async () => {
+const openDeleteModal = () => {
   if (!isOwner.value || !currentPost.value) {
     return;
   }
 
   postsStore.clearDeleteState();
 
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this post?",
-  );
+  showDeleteModal.value = true;
+};
 
-  if (!confirmed) {
+const closeDeleteModal = () => {
+  if (postsStore.deleting) {
     return;
   }
+
+  showDeleteModal.value = false;
+};
+
+const confirmDelete = async () => {
+  if (!isOwner.value || !currentPost.value) {
+    return;
+  }
+
+  postsStore.clearDeleteState();
 
   const success = await postsStore.deletePost(currentPost.value.id);
 
   if (success) {
+    showDeleteModal.value = false;
+
     await router.push("/posts");
   }
 };
@@ -250,7 +265,6 @@ onMounted(async () => {
           </div>
 
           <div class="post-actions">
-            <!-- Favorite: any authenticated user -->
             <button
               v-if="isAuthenticated"
               class="button favorite-button"
@@ -267,7 +281,6 @@ onMounted(async () => {
               }}
             </button>
 
-            <!-- Edit: owner only -->
             <button
               v-if="isOwner"
               class="button"
@@ -277,15 +290,13 @@ onMounted(async () => {
               Edit Post
             </button>
 
-            <!-- Delete: owner only -->
             <button
               v-if="isOwner"
               class="button"
               type="button"
-              :disabled="postsStore.deleting"
-              @click="deletePost"
+              @click="openDeleteModal"
             >
-              {{ postsStore.deleting ? "Deleting..." : "Delete Post" }}
+              Delete Post
             </button>
 
             <button class="button" type="button" @click="goBackToPosts">
@@ -298,7 +309,6 @@ onMounted(async () => {
         <template v-else>
           <h2>Edit Post #{{ currentPost.id }}</h2>
 
-          <!-- Title -->
           <div class="form-group">
             <label for="edit-title"> Title </label>
 
@@ -321,7 +331,6 @@ onMounted(async () => {
             </p>
           </div>
 
-          <!-- Body -->
           <div class="form-group">
             <label for="edit-body"> Body </label>
 
@@ -345,7 +354,6 @@ onMounted(async () => {
             </p>
           </div>
 
-          <!-- Category -->
           <div class="form-group">
             <label for="edit-category"> Category </label>
 
@@ -391,7 +399,6 @@ onMounted(async () => {
             </p>
           </div>
 
-          <!-- Status -->
           <div class="form-group">
             <label for="edit-status"> Status </label>
 
@@ -414,7 +421,6 @@ onMounted(async () => {
             </p>
           </div>
 
-          <!-- Update Error -->
           <div v-if="postsStore.updateError" class="form-status error">
             {{ postsStore.updateError }}
           </div>
@@ -441,7 +447,6 @@ onMounted(async () => {
         </template>
       </article>
 
-      <!-- Not Found -->
       <div v-else>
         <p>Post not found.</p>
 
@@ -450,5 +455,17 @@ onMounted(async () => {
         </button>
       </div>
     </div>
+
+    <DeleteConfirmModal
+      :show="showDeleteModal"
+      :loading="postsStore.deleting"
+      :message="
+        currentPost
+          ? `Are you sure you want to delete &quot;${currentPost.title}&quot;?`
+          : 'Are you sure you want to delete this post?'
+      "
+      @close="closeDeleteModal"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>

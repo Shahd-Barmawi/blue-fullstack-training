@@ -1,8 +1,10 @@
 <script setup>
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { usePosts } from "../composables/usePosts";
 import { useAuthState } from "../composables/useAuthState";
+import DeleteConfirmModal from "./DeleteConfirmModal.vue";
 
 const router = useRouter();
 
@@ -20,6 +22,9 @@ const {
 } = usePosts();
 
 const { isAuthenticated, user } = useAuthState();
+
+const showDeleteModal = ref(false);
+const postToDelete = ref(null);
 
 const isOwner = (post) => {
   return (
@@ -39,18 +44,34 @@ const editPost = (postId) => {
   });
 };
 
-const deletePost = async (postId) => {
+const openDeleteModal = (post) => {
   postsStore.clearDeleteState();
 
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this post?",
-  );
+  postToDelete.value = post;
+  showDeleteModal.value = true;
+};
 
-  if (!confirmed) {
+const closeDeleteModal = () => {
+  if (postsStore.deleting) {
     return;
   }
 
-  await postsStore.deletePost(postId);
+  showDeleteModal.value = false;
+  postToDelete.value = null;
+};
+
+const confirmDelete = async () => {
+  if (!postToDelete.value) {
+    return;
+  }
+
+  postsStore.clearDeleteState();
+
+  const success = await postsStore.deletePost(postToDelete.value.id);
+
+  if (success) {
+    closeDeleteModal();
+  }
 };
 </script>
 
@@ -136,20 +157,17 @@ const deletePost = async (postId) => {
 
           <div class="post-meta">
             <p>
-              <strong> Status: </strong>
-
+              <strong>Status:</strong>
               {{ post.status }}
             </p>
 
             <p>
-              <strong> Category: </strong>
-
+              <strong>Category:</strong>
               {{ post.category?.name || "No category" }}
             </p>
 
             <p>
-              <strong> Author: </strong>
-
+              <strong>Author:</strong>
               {{ post.author?.name || "Unknown author" }}
             </p>
           </div>
@@ -180,10 +198,9 @@ const deletePost = async (postId) => {
               v-if="isOwner(post)"
               class="button"
               type="button"
-              :disabled="postsStore.deleting"
-              @click="deletePost(post.id)"
+              @click="openDeleteModal(post)"
             >
-              {{ postsStore.deleting ? "Deleting..." : "Delete" }}
+              Delete
             </button>
 
             <RouterLink class="button" :to="`/posts/${post.id}`">
@@ -243,5 +260,17 @@ const deletePost = async (postId) => {
         {{ postsStore.lastPage }}
       </p>
     </div>
+
+    <DeleteConfirmModal
+      :show="showDeleteModal"
+      :loading="postsStore.deleting"
+      :message="
+        postToDelete
+          ? `Are you sure you want to delete &quot;${postToDelete.title}&quot;?`
+          : 'Are you sure you want to delete this post?'
+      "
+      @close="closeDeleteModal"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>

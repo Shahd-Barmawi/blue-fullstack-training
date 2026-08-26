@@ -1785,3 +1785,242 @@ label {
 }
 
 /* End Login Page Section */
+
+/* DELETE CONFIRMATION MODAL */
+
+.delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background-color: rgba(15, 23, 42, 0.58);
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.delete-modal {
+  width: min(100%, 440px);
+
+  padding: 32px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  background-color: #ffffff;
+
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+
+  text-align: center;
+}
+
+.delete-modal-icon {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 18px;
+
+  border-radius: 50%;
+
+  background-color: #fee2e2;
+  color: #dc2626;
+
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.delete-modal h3 {
+  margin: 0 0 12px;
+
+  color: #111827;
+
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.delete-modal > p {
+  margin: 0 auto;
+
+  color: #4b5563;
+
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.delete-modal .delete-modal-warning {
+  margin-top: 6px;
+
+  color: #9ca3af;
+
+  font-size: 0.88rem;
+}
+
+.delete-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  margin-top: 26px;
+  padding-top: 20px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+.delete-modal-cancel,
+.delete-modal-confirm {
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Cancel button */
+
+.delete-modal-cancel {
+  border: 1px solid #d1d5db;
+
+  background-color: #ffffff;
+  color: #374151;
+}
+
+.delete-modal-cancel:hover:not(:disabled) {
+  border-color: #9ca3af;
+
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* Delete button */
+
+.delete-modal-confirm {
+  border: 1px solid #dc2626;
+
+  background-color: #dc2626;
+  color: #ffffff;
+
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.18);
+}
+
+.delete-modal-confirm:hover:not(:disabled) {
+  border-color: #b91c1c;
+
+  background-color: #b91c1c;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 16px rgba(185, 28, 28, 0.24);
+}
+
+/* Keyboard accessibility */
+
+.delete-modal-cancel:focus-visible {
+  outline: 3px solid rgba(14, 165, 233, 0.35);
+  outline-offset: 3px;
+}
+
+.delete-modal-confirm:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, 0.3);
+  outline-offset: 3px;
+}
+
+/* Disabled state */
+
+.delete-modal-cancel:disabled,
+.delete-modal-confirm:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+/* Vue transition */
+
+.delete-modal-enter-active,
+.delete-modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.delete-modal-enter-active .delete-modal,
+.delete-modal-leave-active .delete-modal {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.delete-modal-enter-from,
+.delete-modal-leave-to {
+  opacity: 0;
+}
+
+.delete-modal-enter-from .delete-modal,
+.delete-modal-leave-to .delete-modal {
+  opacity: 0;
+
+  transform: translateY(12px) scale(0.97);
+}
+
+/* Responsive */
+
+@media (max-width: 480px) {
+  .delete-modal-overlay {
+    padding: 16px;
+  }
+
+  .delete-modal {
+    padding: 26px 20px;
+  }
+
+  .delete-modal-icon {
+    width: 56px;
+    height: 56px;
+
+    font-size: 28px;
+  }
+
+  .delete-modal h3 {
+    font-size: 1.3rem;
+  }
+
+  .delete-modal-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .delete-modal-confirm {
+    order: 1;
+  }
+
+  .delete-modal-cancel {
+    order: 2;
+  }
+}
+
+/* END DELETE CONFIRMATION MODAL */

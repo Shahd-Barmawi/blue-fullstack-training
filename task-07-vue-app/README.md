@@ -709,3 +709,463 @@ No unresolved issues were identified after the final testing process.
 - Final regression testing: Passed
 
 The frontend is ready for deployment and future development.
+
+---
+
+# Task 15 – Full-Stack Integration: Vue Frontend with Laravel REST API
+
+## Overview
+
+Task 15 focused on integrating the existing Vue frontend with the Laravel REST API developed during the backend tasks.
+
+The temporary JSONPlaceholder API used in the previous frontend tasks was replaced with the local Laravel API. The application now supports real authentication, backend categories, CRUD operations, server-side filtering and pagination, authorization, validation handling, and state synchronization with the Laravel backend and MySQL database.
+
+---
+
+## Technologies Used
+
+### Frontend
+
+- Vue 3
+- Vite
+- Vue Router
+- Pinia
+- JavaScript
+- Fetch API
+- HTML5
+- CSS3
+
+### Backend
+
+- Laravel
+- Laravel REST API
+- Laravel Sanctum / Token Authentication
+- PHP
+- MySQL
+
+---
+
+## Full-Stack Features
+
+The integrated application includes:
+
+- User login using the Laravel API
+- Logout functionality
+- Authenticated user retrieval
+- Protected frontend routes
+- Authenticated API requests
+- Posts loaded from Laravel
+- Categories loaded from Laravel
+- Create Post
+- Update Post
+- Delete Post
+- Post ownership and authorization
+- Backend validation handling
+- Server-side search/filtering
+- Backend pagination
+- Pinia state synchronization
+- Loading, empty, and error states
+- Network failure handling
+- 401 unauthenticated handling
+- 403 forbidden handling
+- 404 missing post handling
+- Responsive frontend behavior
+
+---
+
+## Running the Full-Stack Application
+
+The Vue frontend and Laravel backend remain separate applications and must both be running locally.
+
+### 1. Laravel Backend
+
+Open a terminal inside the Laravel backend project.
+
+Install the backend dependencies if needed:
+
+```bash
+composer install
+```
+
+Create the Laravel environment file from `.env.example` if it does not already exist.
+
+Configure the database connection in the Laravel `.env` file:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_username
+DB_PASSWORD=your_database_password
+```
+
+Do not commit real database passwords or other secrets to the repository.
+
+Generate the application key if needed:
+
+```bash
+php artisan key:generate
+```
+
+Run the database migrations:
+
+```bash
+php artisan migrate
+```
+
+If seeders are used, run:
+
+```bash
+php artisan db:seed
+```
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+The backend normally runs at:
+
+```text
+http://127.0.0.1:8000
+```
+
+The REST API base URL is:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+---
+
+### 2. Vue Frontend
+
+Open another terminal inside the Vue frontend project.
+
+Install the frontend dependencies:
+
+```bash
+npm install
+```
+
+Create or update the frontend `.env` file:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+Start the Vue development server:
+
+```bash
+npm run dev
+```
+
+The frontend normally runs at:
+
+```text
+http://localhost:5173
+```
+
+Both the Laravel server and Vue development server must be running while using the full-stack application.
+
+---
+
+## Frontend API Configuration
+
+The Laravel API base URL is stored in the Vue environment configuration instead of being hardcoded throughout the application.
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+The application accesses the configured value using:
+
+```javascript
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+```
+
+This allows the backend URL to be changed without modifying individual Vue components or stores.
+
+Passwords, authentication tokens, database credentials, and other secrets are not hardcoded in the source code.
+
+---
+
+## Authentication Flow
+
+Authentication is handled through the Laravel backend.
+
+The authentication flow is:
+
+1. The user enters their credentials in the Vue Login page.
+2. Vue sends the credentials to the Laravel login endpoint.
+3. Laravel validates the credentials.
+4. After successful authentication, the frontend stores the returned authentication token.
+5. Authenticated API requests include the token in the `Authorization` header.
+6. Vue retrieves the authenticated user through the backend `/api/me` endpoint.
+7. The authenticated user's name is displayed in the interface.
+8. Protected Vue routes require authentication.
+9. Logout clears the local authentication state and token.
+
+Protected requests include:
+
+```text
+Authorization: Bearer <authentication-token>
+```
+
+No access token is hardcoded in the source code.
+
+---
+
+## Posts Integration
+
+The Posts view now loads data from the Laravel REST API instead of JSONPlaceholder.
+
+Posts are retrieved from:
+
+```text
+/api/posts
+```
+
+The frontend displays backend data including:
+
+- Post title
+- Post body
+- Status
+- Category
+- Author
+
+The application also provides clear loading, empty, retry, and error states when loading posts.
+
+---
+
+## Categories Integration
+
+Categories are retrieved from:
+
+```text
+/api/categories
+```
+
+The Create Post and Edit Post forms use categories returned by Laravel instead of a hardcoded frontend category list.
+
+This keeps the frontend category options synchronized with the backend database.
+
+---
+
+## Create Post Integration
+
+Authenticated users can create posts through the Vue Create Post form.
+
+The frontend sends the form data to the Laravel API using an authenticated `POST` request.
+
+The submitted data includes:
+
+- Title
+- Body
+- Category
+- Status
+
+Laravel validates the request and stores valid posts in MySQL.
+
+Backend validation errors are displayed clearly in the Vue form next to the relevant fields.
+
+After successful creation, the frontend state is synchronized with the backend without requiring a full browser refresh.
+
+---
+
+## Update and Delete Integration
+
+Authenticated users can update or delete posts that they own.
+
+### Update
+
+The Edit Post interface sends an authenticated `PUT` request to the Laravel API.
+
+After a successful update:
+
+- Laravel persists the changes in MySQL.
+- Pinia updates the frontend state.
+- The updated information appears without requiring a browser refresh.
+
+### Delete
+
+The Delete action sends an authenticated `DELETE` request to Laravel.
+
+After successful deletion:
+
+- The post is removed from the backend database.
+- The frontend posts state is synchronized.
+- Pagination information is refreshed.
+- Deleted posts are also removed from the local favorites state when necessary.
+
+Laravel authorization rules determine whether the authenticated user is allowed to modify a post.
+
+If Laravel returns `403 Forbidden`, the frontend displays an authorization error and does not pretend that the operation succeeded.
+
+---
+
+## Filtering and Backend Pagination
+
+Post search and pagination are performed through the Laravel backend.
+
+For example:
+
+```text
+/api/posts?page=1&search=Vue
+```
+
+The search value is sent to Laravel as a query parameter.
+
+Laravel returns only the matching records for the requested page together with pagination metadata.
+
+The Vue interface uses this metadata to display:
+
+- Previous page
+- Page numbers
+- Next page
+- Current page
+- Total number of matching posts
+
+The application does not fetch all database records and simulate server-side pagination in the browser.
+
+---
+
+## Pinia State Synchronization
+
+Pinia manages the shared posts state used throughout the application.
+
+After normal Create, Update, and Delete operations, the frontend state remains synchronized with Laravel without requiring a full browser refresh.
+
+Paginated post data and individual post data are handled separately so that opening a single post does not incorrectly modify the current paginated list.
+
+The centralized store also avoids duplicating the same API request logic across multiple Vue components.
+
+---
+
+## Error Handling
+
+The integrated application was tested for the required API and authentication error scenarios.
+
+### Backend / Network Failure
+
+If the Laravel backend is unavailable, Vue displays a clear API error message and provides a Retry action.
+
+### Invalid Login
+
+Invalid credentials result in a clear authentication error and the user remains unauthenticated.
+
+### Validation Errors
+
+Backend validation errors returned by Laravel are displayed in the frontend form.
+
+### Unauthenticated Requests
+
+Protected frontend routes redirect unauthenticated users to the Login page.
+
+Protected API requests also handle unauthenticated responses appropriately.
+
+### Forbidden Update or Delete
+
+Users cannot update or delete posts they do not own.
+
+If Laravel returns a `403 Forbidden` response, the frontend displays an appropriate error message.
+
+### Missing Post
+
+When a requested post does not exist, the application handles the Laravel `404` response and displays:
+
+```text
+Post not found.
+```
+
+The user can retry the request or return to the Posts page.
+
+---
+
+## End-to-End Full-Stack Flow
+
+The integrated application follows this general flow:
+
+```text
+User
+  ↓
+Vue Frontend
+  ↓
+Fetch API
+  ↓
+Laravel REST API
+  ↓
+Authentication / Validation / Authorization
+  ↓
+Laravel Models
+  ↓
+MySQL Database
+  ↓
+Laravel JSON Response
+  ↓
+Pinia State
+  ↓
+Updated Vue Interface
+```
+
+For example, when an authenticated user creates a post:
+
+1. The user completes the Create Post form in Vue.
+2. Vue sends an authenticated request to Laravel.
+3. Laravel authenticates the user.
+4. Laravel validates the submitted data.
+5. Laravel stores the post in MySQL.
+6. Laravel returns a JSON response.
+7. Pinia synchronizes the frontend posts state.
+8. The new post appears in the Vue application without requiring a full browser refresh.
+
+---
+
+## End-to-End Verification
+
+The full-stack integration was verified using the Vue interface, browser developer tools, Laravel API, and database checks.
+
+The following flows were tested successfully:
+
+- Successful login
+- Invalid login
+- Authenticated user state
+- Loading posts from Laravel
+- Loading categories from Laravel
+- Create Post
+- Update Post
+- Delete Post
+- Backend validation
+- Search/filtering
+- Backend pagination
+- Pinia state synchronization
+- Logout
+- Protected routes
+- Forbidden actions
+- Missing post (`404`)
+- Backend/network failure
+- Responsive frontend behavior
+
+Frontend-created data was also verified through Laravel and MySQL to confirm that the operations were persisted by the backend.
+
+---
+
+## Task 15 Status
+
+- Laravel API integration: Completed
+- Authentication integration: Completed
+- Protected requests: Completed
+- Posts integration: Completed
+- Categories integration: Completed
+- Create Post integration: Completed
+- Update and Delete integration: Completed
+- Backend filtering: Completed
+- Backend pagination: Completed
+- State synchronization: Completed
+- Required error scenarios: Completed
+- End-to-end verification: Completed
+- Responsive verification: Passed
+
+Task 15 full-stack integration is complete.

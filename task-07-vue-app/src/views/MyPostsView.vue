@@ -1,10 +1,11 @@
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { useRouter } from "vue-router";
 
 import { usePostsStore } from "../stores/posts";
 import { useAuthState } from "../composables/useAuthState";
+import DeleteConfirmModal from "../components/DeleteConfirmModal.vue";
 
 const router = useRouter();
 
@@ -12,17 +13,23 @@ const postsStore = usePostsStore();
 
 const { user } = useAuthState();
 
+const showDeleteModal = ref(false);
+const postToDelete = ref(null);
+
 const myPosts = computed(() => {
   if (!user.value) {
     return [];
   }
 
-  return postsStore.posts.filter((post) => post.author?.id === user.value.id);
+  return postsStore.posts.filter(
+    (post) => Number(post.author?.id) === Number(user.value.id),
+  );
 });
 
 const editPost = (postId) => {
   router.push({
     path: `/posts/${postId}`,
+
     query: {
       edit: "1",
     },
@@ -33,18 +40,34 @@ const viewPost = (postId) => {
   router.push(`/posts/${postId}`);
 };
 
-const deletePost = async (postId) => {
+const openDeleteModal = (post) => {
   postsStore.clearDeleteState();
 
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this post?",
-  );
+  postToDelete.value = post;
+  showDeleteModal.value = true;
+};
 
-  if (!confirmed) {
+const closeDeleteModal = () => {
+  if (postsStore.deleting) {
     return;
   }
 
-  await postsStore.deletePost(postId);
+  showDeleteModal.value = false;
+  postToDelete.value = null;
+};
+
+const confirmDelete = async () => {
+  if (!postToDelete.value) {
+    return;
+  }
+
+  postsStore.clearDeleteState();
+
+  const success = await postsStore.deletePost(postToDelete.value.id);
+
+  if (success) {
+    closeDeleteModal();
+  }
 };
 
 onMounted(async () => {
@@ -127,13 +150,8 @@ onMounted(async () => {
               Edit
             </button>
 
-            <button
-              class="button"
-              type="button"
-              :disabled="postsStore.deleting"
-              @click="deletePost(post.id)"
-            >
-              {{ postsStore.deleting ? "Deleting..." : "Delete" }}
+            <button class="button" type="button" @click="openDeleteModal(post)">
+              Delete
             </button>
 
             <button class="button" type="button" @click="viewPost(post.id)">
@@ -143,5 +161,17 @@ onMounted(async () => {
         </article>
       </div>
     </div>
+
+    <DeleteConfirmModal
+      :show="showDeleteModal"
+      :loading="postsStore.deleting"
+      :message="
+        postToDelete
+          ? `Are you sure you want to delete &quot;${postToDelete.title}&quot;?`
+          : 'Are you sure you want to delete this post?'
+      "
+      @close="closeDeleteModal"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
