@@ -1,56 +1,53 @@
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+
+import { apiPost } from "../services/api";
 import { useAuthState } from "./useAuthState";
 
 export const useLogin = () => {
+  const route = useRoute();
   const router = useRouter();
 
   const { setAuth } = useAuthState();
 
   const email = ref("");
   const password = ref("");
+
   const loading = ref(false);
   const error = ref("");
-
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL;
 
   const login = async () => {
     loading.value = true;
     error.value = "";
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            email: email.value,
-            password: password.value,
-          }),
-        },
-      );
-
-      const data = await response.json();
+      const { response, data } = await apiPost("/login", {
+        email: email.value,
+        password: password.value,
+      });
 
       if (!response.ok) {
-        error.value =
-          data.message || "Invalid email or password.";
-        return;
+        error.value = data?.message || "Invalid email or password.";
+
+        return false;
       }
 
       setAuth(data.token, data.user);
 
-      await router.push("/posts");
+      const redirectPath =
+        typeof route.query.redirect === "string"
+          ? route.query.redirect
+          : "/posts";
+
+      await router.push(redirectPath);
+
+      return true;
     } catch (err) {
       console.error(err);
 
-      error.value =
-        "Unable to connect to the server. Please try again.";
+      error.value = "Unable to connect to the server. Please try again.";
+
+      return false;
     } finally {
       loading.value = false;
     }
@@ -59,8 +56,10 @@ export const useLogin = () => {
   return {
     email,
     password,
+
     loading,
     error,
+
     login,
   };
 };
