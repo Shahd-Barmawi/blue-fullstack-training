@@ -46,18 +46,20 @@ class PageController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    // Management: return all pages, including drafts
+    // Management: return all pages, including drafts and content blocks
     public function manageIndex()
     {
-        $pages = Page::latest()->get();
+        $pages = Page::with('contentBlocks')
+            ->latest()
+            ->get();
 
         return response()->json($pages);
     }
 
-    // Management: return one page by ID, including drafts
+    // Management: return one page by ID, including drafts and content blocks
     public function manageShow($id)
     {
-        $page = Page::find($id);
+        $page = Page::with('contentBlocks')->find($id);
 
         if (!$page) {
             return response()->json([
@@ -111,6 +113,9 @@ class PageController extends Controller
         ]);
 
         $page->update($validated);
+
+        // Return the updated page together with its content blocks
+        $page->load('contentBlocks');
 
         return response()->json($page);
     }
