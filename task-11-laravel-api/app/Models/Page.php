@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Page extends Model
 {
@@ -12,4 +13,10 @@ class Page extends Model
         'content',
         'status',
     ];
+
+    public function contentBlocks(): HasMany
+    {
+        return $this->hasMany(ContentBlock::class)
+            ->orderBy('position');
+    }
 }
