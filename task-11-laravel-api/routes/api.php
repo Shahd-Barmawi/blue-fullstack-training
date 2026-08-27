@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContentBlockController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PostController;
@@ -98,6 +99,41 @@ Route::middleware('auth:sanctum')->group(function () {
     // Delete page
     Route::delete('/pages/{id}', [
         PageController::class,
+        'destroy',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Content Blocks Management
+    |--------------------------------------------------------------------------
+    */
+
+    // Add a content block to a page
+    Route::post('/pages/{pageId}/blocks', [
+        ContentBlockController::class,
+        'store',
+    ]);
+
+    // Reorder content blocks
+    Route::put('/pages/{pageId}/blocks/reorder', [
+        ContentBlockController::class,
+        'reorder',
+    ]);
+
+    // Update a content block
+    Route::put('/pages/{pageId}/blocks/{blockId}', [
+        ContentBlockController::class,
+        'update',
+    ]);
+
+    Route::patch('/pages/{pageId}/blocks/{blockId}', [
+        ContentBlockController::class,
+        'update',
+    ]);
+
+    // Delete a content block
+    Route::delete('/pages/{pageId}/blocks/{blockId}', [
+        ContentBlockController::class,
         'destroy',
     ]);
 });
