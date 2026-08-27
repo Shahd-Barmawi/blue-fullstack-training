@@ -19,6 +19,8 @@ const ContactView = () => import("../views/ContactView.vue");
 
 const LoginView = () => import("../views/LoginView.vue");
 
+const DynamicPageView = () => import("../views/DynamicPageView.vue");
+
 const NotFoundView = () => import("../views/NotFoundView.vue");
 
 const routes = [
@@ -86,6 +88,12 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+
+  {
+    path: "/pages/:slug",
+    name: "dynamic-page",
+    component: DynamicPageView,
   },
 
   {
