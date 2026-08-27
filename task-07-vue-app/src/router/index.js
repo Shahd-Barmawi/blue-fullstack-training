@@ -21,6 +21,10 @@ const LoginView = () => import("../views/LoginView.vue");
 
 const DynamicPageView = () => import("../views/DynamicPageView.vue");
 
+const ManagePagesView = () => import("../views/ManagePagesView.vue");
+
+const PageFormView = () => import("../views/PageFormView.vue");
+
 const NotFoundView = () => import("../views/NotFoundView.vue");
 
 const routes = [
@@ -90,10 +94,44 @@ const routes = [
     component: LoginView,
   },
 
+  // Public Dynamic Page
   {
     path: "/pages/:slug",
     name: "dynamic-page",
     component: DynamicPageView,
+  },
+
+  // Pages Management List
+  {
+    path: "/manage/pages",
+    name: "manage-pages",
+    component: ManagePagesView,
+
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  // Create Page
+  {
+    path: "/manage/pages/create",
+    name: "create-page",
+    component: PageFormView,
+
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  // Edit Page
+  {
+    path: "/manage/pages/:id/edit",
+    name: "edit-page",
+    component: PageFormView,
+
+    meta: {
+      requiresAuth: true,
+    },
   },
 
   {
