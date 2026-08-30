@@ -616,3 +616,35 @@ Implemented functionality includes:
 ## Author
 
 Developed as part of the Blue Tech Solutions Full-Stack Training Program.
+
+## October CMS Preparation Notes
+
+This task introduced several concepts that are important when working with content management systems such as October CMS.
+
+### Pages
+
+Pages represent the main content that users can visit on the website. Each page has information such as a title, slug, content, and publishing status. Using a slug allows pages to be accessed dynamically instead of creating a separate Vue page for every piece of content.
+
+### Reusable Content Blocks
+
+Instead of storing an entire page as one fixed layout, pages can be built using reusable content blocks. In this project, examples include Hero, Text, Call to Action, and Feature List blocks. Each block stores its own content and can be added, edited, deleted, or reordered.
+
+On the frontend, each supported block type has its own reusable Vue component. This keeps the code organized and makes it easier to add new block types later.
+
+### Dynamic Rendering
+
+The public Vue application does not hardcode the layout of a CMS page. It receives the page and its blocks from the backend and selects the correct Vue component based on each block's type.
+
+This means the content and order of a page can change without rewriting the page view itself.
+
+### Content Management
+
+The management interface allows authorized users to manage pages and their content blocks. Users can create and update page information, add different types of blocks, edit their content, delete them, and control their display order.
+
+This provides a simple CMS-style workflow where content can be managed separately from the frontend code.
+
+### Public Presentation and Admin Management
+
+The project separates public presentation from content management. Public users only see published content rendered by the Vue application, while protected management routes allow authorized users to create and modify pages and blocks.
+
+This separation keeps the public interface focused on displaying content while the management interface handles content administration.
