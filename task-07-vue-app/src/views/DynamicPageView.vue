@@ -8,6 +8,7 @@ import HeroBlock from "../components/blocks/HeroBlock.vue";
 import TextBlock from "../components/blocks/TextBlock.vue";
 import CallToActionBlock from "../components/blocks/CallToActionBlock.vue";
 import FeatureListBlock from "../components/blocks/FeatureListBlock.vue";
+import UnsupportedBlock from "../components/blocks/UnsupportedBlock.vue";
 
 const route = useRoute();
 const pagesStore = usePagesStore();
@@ -42,7 +43,7 @@ const contentBlocks = computed(() => {
 });
 
 const getBlockComponent = (type) => {
-  return blockComponents[type] || null;
+  return blockComponents[type] || UnsupportedBlock;
 };
 
 /*
@@ -129,8 +130,8 @@ watch(
         <template v-for="block in contentBlocks" :key="block.id">
           <component
             :is="getBlockComponent(block.type)"
-            v-if="getBlockComponent(block.type)"
             :content="block.content"
+            :type="block.type"
           />
         </template>
       </section>
@@ -147,7 +148,7 @@ watch(
       </section>
     </template>
 
-    <!-- Fallback -->
+    <!-- Final Fallback -->
     <section v-else class="section">
       <div class="container">
         <div class="posts-state">Page not found.</div>

@@ -2491,3 +2491,29 @@ label {
   }
 }
 /* END DYNAMIC CMS BLOCKS */
+
+/*    UNSUPPORTED CMS BLOCK */
+.cms-unsupported-block {
+  padding: 48px 0;
+  background: #ffffff;
+}
+
+.cms-unsupported-message {
+  padding: 24px;
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.cms-unsupported-message h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+}
+
+.cms-unsupported-message p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+/* END UNSUPPORTED CMS BLOCK */
