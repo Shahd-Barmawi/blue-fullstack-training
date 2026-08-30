@@ -24,10 +24,11 @@ class PageController extends Controller
         return response()->json($pages);
     }
 
-    // Public: return one published page by slug
+    // Public: return one published page by slug with ordered content blocks
     public function show($slug)
     {
-        $page = Page::where('slug', $slug)
+        $page = Page::with('contentBlocks')
+            ->where('slug', $slug)
             ->where('status', 'published')
             ->first();
 
